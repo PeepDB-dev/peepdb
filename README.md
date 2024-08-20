@@ -15,7 +15,9 @@ but not multiple connections of the same db type
 
 ## Installation
 
-You can install peepDB using pip: (not yet)
+TODO:
+
+You can install peepDB using pip
 
 pip install peepDB 
 
@@ -45,19 +47,13 @@ peepDB mysql --table users
 ### Use PostgreSQL without saving details
 peepDB postgres --host localhost --user postgres --password mypassword --database mydb --table customers
 
-### Python Library
+### Python Library 
+
+This is a TODO item:
 
 You can also use peepDB in your Python scripts:
 
 from peepdb.core import peep_db
-
-# View all tables
-result = peep_db('mysql', 'localhost', 'root', 'mypassword', 'mydb')
-
-# View a specific table
-result = peep_db('mysql', 'localhost', 'root', 'mypassword', 'mydb', table='users')
-
-print(result)
 
 ## Security
 peepDB uses encryption to securely store your database connection details. The encryption key is stored in your user directory (~/.peepdb/key.key). Make sure to keep this key safe and do not share it.
