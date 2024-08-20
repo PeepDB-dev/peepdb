@@ -1,6 +1,20 @@
+Metadata-Version: 2.1
+Name: peepDB
+Version: 0.1
+Summary: A quick database table viewer
+Home-page: https://github.com/evangelosmeklis/peepDB
+Author: Evangelos Meklis
+Author-email: vmeklis@hotmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+
 # peepDB
 
-peepDB is an Open Source command-line tool and Python library that allows you to quickly view the contents of MySQL, PostgreSQL, or MariaDB database tables. It's designed for developers and database administrators who need a fast way to inspect their data without writing SQL queries.
+peepDB is a command-line tool and Python library that allows you to quickly view the contents of MySQL, PostgreSQL, or MariaDB database tables. It's designed for developers and database administrators who need a fast way to inspect their data without writing SQL queries.
 
 ## Features
 
@@ -10,14 +24,9 @@ peepDB is an Open Source command-line tool and Python library that allows you to
 - Secure storage of database connection details
 - Fast and lightweight
 
-Currently it supports one MySQL database connection concurrently with PostgreSQL and MariaDB 
-but not multiple connections of the same db type
-
 ## Installation
 
-TODO:
-
-You can install peepDB using pip
+You can install peepDB using pip: (not yet)
 
 pip install peepDB 
 
@@ -47,13 +56,19 @@ peepDB mysql --table users
 ### Use PostgreSQL without saving details
 peepDB postgres --host localhost --user postgres --password mypassword --database mydb --table customers
 
-### Python Library 
-
-This is a TODO item:
+### Python Library
 
 You can also use peepDB in your Python scripts:
 
 from peepdb.core import peep_db
+
+# View all tables
+result = peep_db('mysql', 'localhost', 'root', 'mypassword', 'mydb')
+
+# View a specific table
+result = peep_db('mysql', 'localhost', 'root', 'mypassword', 'mydb', table='users')
+
+print(result)
 
 ## Security
 peepDB uses encryption to securely store your database connection details. The encryption key is stored in your user directory (~/.peepdb/key.key). Make sure to keep this key safe and do not share it.
@@ -68,4 +83,5 @@ Push to the branch (git push origin feature/AmazingFeature)
 Open a Pull Request
 
 ## License
-Distributed under the GNU General Public License Version 3. See the LICENSE file for more details.
+Distributed under the MIT License. See LICENSE for more information.
+

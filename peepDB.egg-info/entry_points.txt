@@ -1,0 +1,3 @@
+[console_scripts]
+peepDB = peepdb.cli:main
+
