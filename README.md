@@ -17,9 +17,9 @@
 
 To install peepDB, simply use pip:
 
-\`\`\`bash
+```bash
 pip install peepDB
-\`\`\`
+```
 
 ## 🛠️ Usage
 
@@ -29,57 +29,57 @@ pip install peepDB
 
 You can securely store your connection details for easier access:
 
-\`\`\`bash
+```bash
 peepDB <db_type> --host <host> --user <user> --password <password> --database <database> --save
-\`\`\`
+```
 
 #### 2. View All Tables or a Specific Table
 
 To view all tables in the database:
 
-\`\`\`bash
+```bash
 peepDB <db_type>
-\`\`\`
+```
 
 To view a specific table:
 
-\`\`\`bash
+```bash
 peepDB <db_type> --table <table_name>
-\`\`\`
+```
 
 ### Examples
 
 - **Save MySQL connection details:**
 
-  \`\`\`bash
+  ```bash
   peepDB mysql --host localhost --user root --password mypassword --database mydb --save
-  \`\`\`
+  ```
 
 - **View all tables in the saved MySQL database:**
 
-  \`\`\`bash
+  ```bash
   peepDB mysql
-  \`\`\`
+  ```
 
 - **View a specific table:**
 
-  \`\`\`bash
+  ```bash
   peepDB mysql --table users
-  \`\`\`
+  ```
 
 - **Use PostgreSQL without saving details:**
 
-  \`\`\`bash
+  ```bash
   peepDB postgres --host localhost --user postgres --password mypassword --database mydb --table customers
-  \`\`\`
+  ```
 
 ### Python Library (Coming Soon)
 
 You will also be able to use peepDB in your Python scripts:
 
-\`\`\`python
+```python
 from peepdb.core import peep_db
-\`\`\`
+```
 
 ## 🔒 Security
 
