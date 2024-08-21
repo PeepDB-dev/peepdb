@@ -26,6 +26,9 @@ cd peepDB
 ```
 
 2. Install the package in editable mode:
+
+> **Note:** Create a virtual environment before running this command
+
 ```bash 
 pip install -e .
  ```
@@ -33,9 +36,9 @@ pip install -e .
 3. Run peepDB:
 
 ```bash 
-python -m peepdb
+peepdb [command] 
  ```
-
+See Usage for more info on commands
 
 > **Note:**  We're working on making peepDB available via pip for easier installation in the future.
 
