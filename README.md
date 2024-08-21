@@ -19,7 +19,7 @@ Currently, peepDB is not available on PyPI. To install it, follow these steps:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/username/peepDB.git
+git clone https://github.com/evangelosmeklis/peepDB.git
 ```
 ```bash
 cd peepDB
