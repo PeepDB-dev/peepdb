@@ -15,11 +15,29 @@
 
 ## 📦 Installation
 
-To install peepDB, simply use pip:
+Currently, peepDB is not available on PyPI. To install it, follow these steps:
 
+1. Clone the repository:
 ```bash
-pip install peepDB
+Copygit clone https://github.com/username/peepDB.git
 ```
+```bash
+cd peepDB
+```
+
+2. Install the package in editable mode:
+```bash 
+Copypip install -e .
+ ```
+
+3. Run peepDB:
+
+```bash 
+Copypython -m peepdb
+ ```
+
+
+> **Note:**  We're working on making peepDB available via pip for easier installation in the future.
 
 ## 🛠️ Usage
 
