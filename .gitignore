@@ -1,1 +1,18 @@
+# Virtual environment
 venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Package distribution
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+
+# Operating system files
+.DS_Store
+Thumbs.db
