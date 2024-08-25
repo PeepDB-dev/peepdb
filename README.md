@@ -74,6 +74,20 @@ To view a specific table:
 peepDB <connection_name> --table <table_name>
 ```
 
+#### 4.  Removed Saved Connections
+
+To remove a specific saved connection:
+
+```bash
+peepdb --remove <connection_name>
+```
+To remove all saved connection:
+
+```bash
+peepdb --remove-all
+```
+> **Note:** Both of these commands will ask for confirmation before proceeding with the removal.
+
 ### Examples
 
 - **Save MySQL connection details:**

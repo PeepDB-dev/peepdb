@@ -77,3 +77,32 @@ def list_connections():
     for name, details in config.items():
         db_type = details.get('db_type', 'Unknown')
         print(f"- {name} ({db_type})")
+    
+def remove_connection(name):
+    if not os.path.exists(CONFIG_FILE):
+        return False
+
+    with open(CONFIG_FILE, "r") as f:
+        config = json.load(f)
+
+    if name not in config:
+        return False
+
+    del config[name]
+
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f)
+
+    return True
+
+def remove_all_connections():
+    if not os.path.exists(CONFIG_FILE):
+        return 0
+
+    count = 0
+    with open(CONFIG_FILE, "r") as f:
+        config = json.load(f)
+        count = len(config)
+
+    os.remove(CONFIG_FILE)
+    return count
