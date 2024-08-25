@@ -11,8 +11,6 @@
 - **Secure Storage**: Securely store database connection details with encryption.
 - **Lightweight**: Minimal footprint, designed for speed.
 
-> **Note:** Currently, peepDB supports one connection per database type (e.g., one MySQL, one PostgreSQL, one MariaDB) concurrently.
-
 ## 📦 Installation
 
 Currently, peepDB is not available on PyPI. To install it, follow these steps:
@@ -51,21 +49,29 @@ See Usage for more info on commands
 You can securely store your connection details for easier access:
 
 ```bash
-peepDB <db_type> --host <host> --user <user> --password <password> --database <database> --save
+peepdb <connection_name> --save --db-type [mysql/postgres/mariadb] --host <host> --user <user> --password <password> --database <database>
 ```
 
-#### 2. View All Tables or a Specific Table
+#### 2.  List Saved Connections
+
+To view all saved database connections:
+
+```bash
+peepDB --list
+```
+
+#### 3. View All Tables or a Specific Table
 
 To view all tables in the database:
 
 ```bash
-peepDB <db_type>
+peepDB <connection_name>
 ```
 
 To view a specific table:
 
 ```bash
-peepDB <db_type> --table <table_name>
+peepDB <connection_name> --table <table_name>
 ```
 
 ### Examples
@@ -73,25 +79,25 @@ peepDB <db_type> --table <table_name>
 - **Save MySQL connection details:**
 
   ```bash
-  peepDB mysql --host localhost --user root --password mypassword --database mydb --save
+  peepdb myapp_db --save --db-type mysql --host localhost --user root --password mypassword --database myapp
   ```
 
 - **View all tables in the saved MySQL database:**
 
   ```bash
-  peepDB mysql
+  peepDB myapp_db
   ```
 
 - **View a specific table:**
 
   ```bash
-  peepDB mysql --table users
+  peepDB myapp_db --table users
   ```
 
 - **Use PostgreSQL without saving details:**
 
   ```bash
-  peepDB postgres --host localhost --user postgres --password mypassword --database mydb --table customers
+  peepdb analytics_db --save --db-type postgres --host localhost --user postgres --password mypassword --database analytics
   ```
 
 ### Python Library (Coming Soon)

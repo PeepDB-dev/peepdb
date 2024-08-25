@@ -22,7 +22,7 @@ def encrypt(message: str) -> str:
 def decrypt(token: str) -> str:
     return Fernet(get_key()).decrypt(token.encode()).decode()
 
-def save_connection(db_type, host, user, password, database):
+def save_connection(name, db_type, host, user, password, database):
     if not os.path.exists(CONFIG_DIR):
         os.makedirs(CONFIG_DIR)
 
@@ -31,7 +31,8 @@ def save_connection(db_type, host, user, password, database):
         with open(CONFIG_FILE, "r") as f:
             config = json.load(f)
 
-    config[db_type] = {
+    config[name] = {
+        "db_type": db_type,
         "host": encrypt(host),
         "user": encrypt(user),
         "password": encrypt(password),
@@ -41,18 +42,19 @@ def save_connection(db_type, host, user, password, database):
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f)
 
-def get_connection(db_type):
+def get_connection(name):
     if not os.path.exists(CONFIG_FILE):
         return None
 
     with open(CONFIG_FILE, "r") as f:
         config = json.load(f)
 
-    if db_type not in config:
+    if name not in config:
         return None
 
-    conn = config[db_type]
+    conn = config[name]
     return (
+        conn["db_type"],
         decrypt(conn["host"]),
         decrypt(conn["user"]),
         decrypt(conn["password"]),
@@ -67,6 +69,11 @@ def list_connections():
     with open(CONFIG_FILE, "r") as f:
         config = json.load(f)
 
+    if not config:
+        print("No saved connections.")
+        return
+
     print("Saved connections:")
-    for db_type in config.keys():
-        print(f"- {db_type}")
+    for name, details in config.items():
+        db_type = details.get('db_type', 'Unknown')
+        print(f"- {name} ({db_type})")
