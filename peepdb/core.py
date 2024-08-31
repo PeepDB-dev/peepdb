@@ -2,6 +2,7 @@ import mysql.connector
 import psycopg2
 import pymysql
 from decimal import Decimal
+from datetime import date, time, datetime
 
 def connect_to_database(db_type, host, user, password, database):
     if db_type == 'mysql':
@@ -29,6 +30,8 @@ def view_table(cursor, table_name):
         for i, value in enumerate(row):
             if isinstance(value, Decimal):
                 value = float(value)
+            elif isinstance(value, (date, time, datetime)):
+                value = value.isoformat()
             row_dict[columns[i]] = value
         rows.append(row_dict)
     return rows
