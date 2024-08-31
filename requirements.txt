@@ -1,7 +1,6 @@
 mysql-connector-python
 psycopg2-binary
 pymysql
-cryptographycffi==1.17.0
 coverage==7.6.1
 cryptography==43.0.0
 iniconfig==2.0.0

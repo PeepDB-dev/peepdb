@@ -1,8 +1,11 @@
 import pytest
-from unittest.mock import patch, MagicMock
-from peepdb.cli import main
+from unittest.mock import patch, MagicMock, mock_open
 from io import StringIO
 import sys
+import os
+import json
+from peepdb.cli import main
+from peepdb.config import remove_all_connections, CONFIG_FILE
 
 @pytest.fixture
 def mock_stdin(monkeypatch):
@@ -51,20 +54,46 @@ def test_remove_connection(mock_confirm, mock_remove, mock_stdout):
     mock_remove.assert_called_once_with('test_db')
     assert "Connection 'test_db' has been removed." in mock_stdout.getvalue()
 
-@patch('peepdb.cli.remove_all_connections')
-@patch('peepdb.cli.confirm_action')
-def test_remove_all_connections(mock_confirm, mock_remove_all, mock_stdout):
-    test_args = ['peepdb', '--remove-all']
-    mock_confirm.return_value = True
-    mock_remove_all.return_value = 2
-    
-    with patch.object(sys, 'argv', test_args):
-        with patch('sys.stdout', mock_stdout):
-            main()
-    
-    mock_confirm.assert_called_once()
-    mock_remove_all.assert_called_once()
-    assert "2 connection(s) have been removed." in mock_stdout.getvalue()
+@patch('peepdb.config.os.path.exists')
+@patch('peepdb.config.os.remove')
+def test_remove_all_connections(mock_remove, mock_exists):
+    # Test when file exists and is valid
+    mock_exists.return_value = True
+    mock_file = mock_open(read_data='{"conn1": {}, "conn2": {}}')
+    with patch('builtins.open', mock_file):
+        count = remove_all_connections()
+    assert count == 2
+    mock_remove.assert_called_once_with(CONFIG_FILE)
+
+    # Reset mock_remove for the next test
+    mock_remove.reset_mock()
+
+    # Test when file doesn't exist
+    mock_exists.return_value = False
+    count = remove_all_connections()
+    assert count == 0
+    mock_remove.assert_not_called()
+
+    # Test when file is deleted between check and remove
+    mock_exists.return_value = True
+    mock_remove.side_effect = FileNotFoundError
+    mock_file = mock_open(read_data='{"conn1": {}, "conn2": {}}')
+    with patch('builtins.open', mock_file):
+        count = remove_all_connections()
+    assert count == 2
+    mock_remove.assert_called_with(CONFIG_FILE)
+
+    # Reset mock_remove for the next test
+    mock_remove.reset_mock()
+    mock_remove.side_effect = None
+
+    # Test when file exists but is not valid JSON
+    mock_exists.return_value = True
+    mock_file = mock_open(read_data='invalid json')
+    with patch('builtins.open', mock_file):
+        count = remove_all_connections()
+    assert count == 0
+    mock_remove.assert_called_with(CONFIG_FILE)
 
 @patch('peepdb.cli.peep_db')
 @patch('peepdb.cli.get_connection')

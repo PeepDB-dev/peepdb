@@ -100,9 +100,17 @@ def remove_all_connections():
         return 0
 
     count = 0
-    with open(CONFIG_FILE, "r") as f:
-        config = json.load(f)
-        count = len(config)
+    try:
+        with open(CONFIG_FILE, "r") as f:
+            config = json.load(f)
+            count = len(config)
 
-    os.remove(CONFIG_FILE)
+        os.remove(CONFIG_FILE)
+    except FileNotFoundError:
+        # File was deleted between check and remove
+        pass
+    except json.JSONDecodeError:
+        # File exists but is not valid JSON
+        os.remove(CONFIG_FILE)
+    
     return count
