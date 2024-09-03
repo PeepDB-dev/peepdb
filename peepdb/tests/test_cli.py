@@ -97,19 +97,98 @@ def test_remove_all_connections(mock_remove, mock_exists):
 
 @patch('peepdb.cli.peep_db')
 @patch('peepdb.cli.get_connection')
-def test_peep_db(mock_get_connection, mock_peep_db, mock_stdout):
-    test_args = ['peepdb', 'test_db', '--table', 'users']
+def test_peep_db_table_format(mock_get_connection, mock_peep_db, mock_stdout):
+    test_args = ['peepdb', 'test_db']
     mock_get_connection.return_value = ('mysql', 'localhost', 'testuser', 'testpass', 'testdb')
-    mock_peep_db.return_value = {'users': [{'id': 1, 'name': 'Test User'}]}
-    
+    mock_peep_db.return_value = """Table: users
++----+------+-------+
+| id | name | email |
++====+======+=======+
+|  1 | John | j@e.c |
++----+------+-------+
+|  2 | Jane | j@e.c |
++----+------+-------+
+
+Table: orders
++----+------+-------+
+| id | user | total |
++====+======+=======+
+|  1 |    1 |   100 |
++----+------+-------+
+|  2 |    2 |   200 |
++----+------+-------+"""
+
     with patch.object(sys, 'argv', test_args):
         with patch('sys.stdout', mock_stdout):
             main()
     
     mock_get_connection.assert_called_once_with('test_db')
-    mock_peep_db.assert_called_once_with('mysql', 'localhost', 'testuser', 'testpass', 'testdb', 'users')
-    assert '"id": 1' in mock_stdout.getvalue()
-    assert '"name": "Test User"' in mock_stdout.getvalue()
+    mock_peep_db.assert_called_once_with('mysql', 'localhost', 'testuser', 'testpass', 'testdb', None, format='table')
+    
+    expected_output = """Table: users
++----+------+-------+
+| id | name | email |
++====+======+=======+
+|  1 | John | j@e.c |
++----+------+-------+
+|  2 | Jane | j@e.c |
++----+------+-------+
+
+Table: orders
++----+------+-------+
+| id | user | total |
++====+======+=======+
+|  1 |    1 |   100 |
++----+------+-------+
+|  2 |    2 |   200 |
++----+------+-------+
+"""
+    assert mock_stdout.getvalue().strip() == expected_output.strip()
+
+@patch('peepdb.cli.peep_db')
+@patch('peepdb.cli.get_connection')
+def test_peep_db_json_format(mock_get_connection, mock_peep_db, mock_stdout):
+    test_args = ['peepdb', 'test_db', '--format', 'json']
+    mock_get_connection.return_value = ('mysql', 'localhost', 'testuser', 'testpass', 'testdb')
+    mock_peep_db.return_value = {
+        'users': [{'id': 1, 'name': 'John', 'email': 'j@e.c'}, {'id': 2, 'name': 'Jane', 'email': 'j@e.c'}],
+        'orders': [{'id': 1, 'user': 1, 'total': 100}, {'id': 2, 'user': 2, 'total': 200}]
+    }
+
+    with patch.object(sys, 'argv', test_args):
+        with patch('sys.stdout', mock_stdout):
+            main()
+    
+    mock_get_connection.assert_called_once_with('test_db')
+    mock_peep_db.assert_called_once_with('mysql', 'localhost', 'testuser', 'testpass', 'testdb', None, format='json')
+    
+    expected_output = """{
+  "users": [
+    {
+      "id": 1,
+      "name": "John",
+      "email": "j@e.c"
+    },
+    {
+      "id": 2,
+      "name": "Jane",
+      "email": "j@e.c"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "user": 1,
+      "total": 100
+    },
+    {
+      "id": 2,
+      "user": 2,
+      "total": 200
+    }
+  ]
+}"""
+    assert mock_stdout.getvalue().strip() == expected_output.strip()
 
 if __name__ == '__main__':
     pytest.main()

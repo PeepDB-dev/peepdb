@@ -63,11 +63,11 @@ def test_peep_db(mock_view_table, mock_fetch_tables, mock_connect):
     mock_view_table.return_value = ['row1']  # Changed this line
 
     # Test without specifying a table
-    result = peep_db('mysql', 'host', 'user', 'password', 'database')
+    result = peep_db('mysql', 'host', 'user', 'password', 'database', format='json')
     assert result == {'table1': ['row1'], 'table2': ['row1']}
 
     # Test with a specific table
-    result = peep_db('mysql', 'host', 'user', 'password', 'database', table='table1')
+    result = peep_db('mysql', 'host', 'user', 'password', 'database', table='table1', format='json')
     assert result == {'table1': ['row1']}
 
     # Verify that view_table was called with the correct arguments

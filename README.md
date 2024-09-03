@@ -1,4 +1,3 @@
-
 # peepDB
 
 **peepDB** is an open-source command-line tool and Python library designed for developers and database administrators who need a fast and efficient way to inspect their database tables without writing SQL queries. With support for MySQL, PostgreSQL, and MariaDB, peepDB is lightweight, secure, and incredibly easy to use.
@@ -10,6 +9,7 @@
 - **User-Friendly CLI**: Easy-to-use command-line interface.
 - **Secure Storage**: Securely store database connection details with encryption.
 - **Lightweight**: Minimal footprint, designed for speed.
+- **Formatted Output**: View data in a clean, formatted table or JSON format.
 
 ## 📦 Installation
 
@@ -18,8 +18,6 @@ Currently, peepDB is not available on PyPI. To install it, follow these steps:
 1. Clone the repository:
 ```bash
 git clone https://github.com/evangelosmeklis/peepDB.git
-```
-```bash
 cd peepDB
 ```
 
@@ -29,13 +27,13 @@ cd peepDB
 
 ```bash 
 pip install -e .
- ```
+```
 
 3. Run peepDB:
 
 ```bash 
 peepdb [command] 
- ```
+```
 See Usage for more info on commands
 
 > **Note:**  We're working on making peepDB available via pip for easier installation in the future.
@@ -74,53 +72,96 @@ To view a specific table:
 peepDB <connection_name> --table <table_name>
 ```
 
-#### 4.  Removed Saved Connections
+#### 4. Choose Output Format
+
+By default, peepDB displays data in a formatted table. You can also get the output in JSON format:
+
+```bash
+peepDB <connection_name> --format json
+```
+
+#### 5. Remove Saved Connections
 
 To remove a specific saved connection:
 
 ```bash
 peepdb --remove <connection_name>
 ```
-To remove all saved connection:
+
+To remove all saved connections:
 
 ```bash
 peepdb --remove-all
 ```
+
 > **Note:** Both of these commands will ask for confirmation before proceeding with the removal.
 
 ### Examples
 
-- **Save MySQL connection details:**
+1. **Save MySQL connection details:**
 
-  ```bash
-  peepdb myapp_db --save --db-type mysql --host localhost --user root --password mypassword --database myapp
-  ```
+   ```bash
+   peepdb myapp_db --save --db-type mysql --host localhost --user root --password mypassword --database myapp
+   ```
 
-- **View all tables in the saved MySQL database:**
+2. **View all tables in the saved MySQL database:**
 
-  ```bash
-  peepDB myapp_db
-  ```
+   ```bash
+   peepDB myapp_db
+   ```
 
-- **View a specific table:**
+   Output:
+   ```
+   Table: users
+   +----+----------+----------------------+
+   | id | username | email                |
+   +====+==========+======================+
+   |  1 | john_doe | john.doe@example.com |
+   +----+----------+----------------------+
+   |  2 | jane_doe | jane.doe@example.com |
+   +----+----------+----------------------+
 
-  ```bash
-  peepDB myapp_db --table users
-  ```
+   Table: orders
+   +----+---------+------------+--------+
+   | id | user_id | order_date | total  |
+   +====+=========+============+========+
+   |  1 |       1 | 2023-05-01 | 100.00 |
+   +----+---------+------------+--------+
+   |  2 |       2 | 2023-05-02 | 150.50 |
+   +----+---------+------------+--------+
+   ```
 
-- **Use PostgreSQL without saving details:**
+3. **View a specific table:**
 
-  ```bash
-  peepdb analytics_db --save --db-type postgres --host localhost --user postgres --password mypassword --database analytics
-  ```
+   ```bash
+   peepDB myapp_db --table users
+   ```
 
-### Python Library (Coming Soon)
+4. **Get output in JSON format:**
 
-You will also be able to use peepDB in your Python scripts:
+   ```bash
+   peepDB myapp_db --format json
+   ```
 
-```python
-from peepdb.core import peep_db
-```
+   Output:
+   ```json
+   {
+     "users": [
+       {"id": 1, "username": "john_doe", "email": "john.doe@example.com"},
+       {"id": 2, "username": "jane_doe", "email": "jane.doe@example.com"}
+     ],
+     "orders": [
+       {"id": 1, "user_id": 1, "order_date": "2023-05-01", "total": 100.00},
+       {"id": 2, "user_id": 2, "order_date": "2023-05-02", "total": 150.50}
+     ]
+   }
+   ```
+
+5. **Use PostgreSQL without saving details:**
+
+   ```bash
+   peepdb analytics_db --save --db-type postgres --host localhost --user postgres --password mypassword --database analytics
+   ```
 
 ## 🔒 Security
 
@@ -133,11 +174,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ### Steps to Contribute:
 
 1. Fork the repository.
-2. Create your feature branch (\`git checkout -b feature/AmazingFeature\`).
-3. Commit your changes (\`git commit -m 'Add some AmazingFeature'\`).
-4. Push to the branch (\`git push origin feature/AmazingFeature\`).
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
 5. Open a Pull Request.
 
 ## 📜 License
 
-Distributed under the GNU General Public License Version 3. See the \`LICENSE\` file for more details.
+Distributed under the GNU General Public License Version 3. See the `LICENSE` file for more details.
