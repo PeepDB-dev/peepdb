@@ -3,6 +3,7 @@ import psycopg2
 import pymysql
 from decimal import Decimal
 from datetime import date, time, datetime
+from tabulate import tabulate
 
 def connect_to_database(db_type, host, user, password, database):
     if db_type == 'mysql':
@@ -36,7 +37,7 @@ def view_table(cursor, table_name):
         rows.append(row_dict)
     return rows
 
-def peep_db(db_type, host, user, password, database, table=None):
+def peep_db(db_type, host, user, password, database, table=None, format='table'):
     conn = connect_to_database(db_type, host, user, password, database)
     cursor = conn.cursor()
 
@@ -49,4 +50,20 @@ def peep_db(db_type, host, user, password, database, table=None):
     cursor.close()
     conn.close()
 
-    return result
+    if format == 'table':
+        return format_as_table(result)
+    else:
+        return result
+
+def format_as_table(data):
+    formatted_result = []
+    for table_name, rows in data.items():
+        formatted_result.append(f"Table: {table_name}")
+        if rows:
+            headers = rows[0].keys()
+            table_data = [[row[col] for col in headers] for row in rows]
+            formatted_result.append(tabulate(table_data, headers=headers, tablefmt='grid'))
+        else:
+            formatted_result.append("No data")
+        formatted_result.append("")  # Add an empty line between tables
+    return "\n".join(formatted_result).strip()  # Remove trailing newline

@@ -70,7 +70,7 @@ def test_peep_db_with_data_types(mock_connect):
         (2, 'Jane Smith', date(1985, 5, 15), time(7, 30), datetime(2023, 5, 2, 9, 45), Decimal('2500.75'), False, '["item1", "item2"]')
     ]
 
-    result = peep_db('mysql', 'host', 'user', 'password', 'database', table='test_table')
+    result = peep_db('mysql', 'host', 'user', 'password', 'database', table='test_table', format='json')
 
     assert 'test_table' in result
     assert len(result['test_table']) == 2

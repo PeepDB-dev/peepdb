@@ -30,7 +30,8 @@ def main():
     parser.add_argument("--remove", metavar="CONNECTION_NAME", help="Remove a specific saved connection")
     parser.add_argument("--remove-all", action="store_true", help="Remove all saved connections")
     parser.add_argument("--table", help="Specific table to view (optional)")
-    
+    parser.add_argument("--format", choices=['table', 'json'], default='table', help="Output format (default: table)")
+
     # Arguments for saving a new connection
     parser.add_argument("--db-type", choices=["mysql", "postgres", "mariadb"], help="Database type")
     parser.add_argument("--host", help="Database host")
@@ -87,7 +88,8 @@ def main():
         return
 
     db_type, host, user, password, database = connection
-    result = peep_db(db_type, host, user, password, database, args.table)
+    
+    result = peep_db(db_type, host, user, password, database, args.table, format=args.format)
 
     class CustomEncoder(json.JSONEncoder):
         def default(self, obj):
@@ -97,7 +99,10 @@ def main():
                 return obj.isoformat()
             return super(CustomEncoder, self).default(obj)
     
-    print(json.dumps(result, indent=2, cls=CustomEncoder))
+    if args.format == 'table':
+        print(result)
+    else:
+        print(json.dumps(result, indent=2, cls=CustomEncoder))
 
 if __name__ == "__main__":
     main()
