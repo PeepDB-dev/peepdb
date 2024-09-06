@@ -1,10 +1,12 @@
-name: Run Tests
+name: Test and Publish
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  release:
+    types: [published]
 
 jobs:
   test:
@@ -14,20 +16,39 @@ jobs:
         python-version: ['3.9', '3.10', '3.11']
 
     steps:
-    - name: Check out code
-      uses: actions/checkout@v3
-
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -e .
-
     - name: Run tests
+      run: pytest peepdb/tests
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: main_environment
+    if: github.event_name == 'release' && github.event.action == 'published'
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
       run: |
-        pytest peepdb/tests
+        python -m pip install --upgrade pip
+        pip install build
+    - name: Build package
+      run: python -m build
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}

@@ -36,8 +36,6 @@ peepdb [command]
 ```
 See Usage for more info on commands
 
-> **Note:**  We're working on making peepDB available via pip for easier installation in the future.
-
 ## 🛠️ Usage
 
 ### Command-Line Interface
