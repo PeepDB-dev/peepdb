@@ -16,7 +16,7 @@
 You can install peepDB directly from PyPI:
 
 ```bash
-pip install peepDB
+pip install peepdb
 ```
 
 ## 🛠️ Usage

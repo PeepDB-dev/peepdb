@@ -4,14 +4,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="peepDB",
-    version="0.1.0",
+    name="peepdb",
+    version="0.1.1",
     author="Evangelos Meklis",
     author_email="vmeklis@hotmail.com",
     description="A quick database table viewer",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/evangelosmeklis/peepDB",
+    url="https://github.com/evangelosmeklis/peepdb",
     packages=find_packages(),
     install_requires=[
         "mysql-connector-python",
