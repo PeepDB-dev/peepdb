@@ -1,4 +1,4 @@
-name: Test and Publish
+name: Test and Publish Python Distribution
 
 on:
   push:
@@ -6,8 +6,7 @@ on:
   pull_request:
     branches: [ main ]
   release:
-    types: [published]
-  workflow_dispatch:
+    types: [published, released]
 
 jobs:
   test:
@@ -38,11 +37,11 @@ jobs:
     - name: Run tests
       run: pytest peepdb/tests
 
-  publish:
+  publish-testpypi:
     needs: test
     runs-on: ubuntu-latest
     environment: test_environment
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event.release.prerelease == true
     
     steps:
     - uses: actions/checkout@v3
@@ -76,4 +75,42 @@ jobs:
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
         repository_url: https://test.pypi.org/legacy/
         skip_existing: true
+        verbose: true
+
+  publish-pypi:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production_environment
+    if: github.event.release.prerelease == false
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Clean build directories
+      run: |
+        rm -rf build/ dist/ *.egg-info/
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libmariadb-dev
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build
+
+    - name: Build package
+      run: python -m build
+
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@v1.5.1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
         verbose: true
