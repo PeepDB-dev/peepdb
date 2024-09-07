@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "peepdb"
-version = "0.1.1"
+version = "0.1.2"
 description = "A quick database table viewer"
 authors = [
     {name = "Evangelos Meklis", email = "vmeklis@hotmail.com"},
