@@ -27,6 +27,7 @@ setup(
             'pytest>=8.3.2',
             'pytest-cov>=5.0.0',
         ],
+        'system': ['libmariadb3', 'libmariadb-dev'],
     },
     classifiers=[
         "Development Status :: 3 - Alpha",

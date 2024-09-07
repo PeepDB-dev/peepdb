@@ -18,6 +18,15 @@ This will install the latest version of peepDB along with all its dependencies.
 - Python 3.6 or higher
 - pip (Python package installer)
 
+## System Dependencies
+
+Before installing peepdb, ensure you have the following system dependencies:
+
+```bash
+sudo apt-get update
+sudo apt-get install libmariadb3 libmariadb-dev
+```
+
 ## Verifying the Installation
 
 After installation, you can verify that peepDB is installed correctly by running:

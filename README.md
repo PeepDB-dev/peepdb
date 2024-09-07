@@ -25,6 +25,15 @@ pip install peepdb
 
 > **Note:** If peepdb gives an error like "The term 'peepdb' is not recognized as the name of a cmdlet" remember to add the Python Scripts folder to your PATH in Windows.
 
+## System Dependencies
+
+Before installing peepdb, ensure you have the following system dependencies:
+
+```bash
+sudo apt-get update
+sudo apt-get install libmariadb3 libmariadb-dev
+```
+
 Verify the installation by running:
 ```bash
 peepdb --version
