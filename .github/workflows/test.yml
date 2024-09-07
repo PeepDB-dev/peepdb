@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main ]
   release:
-    types: [published, released]
+    types: [published]
 
 jobs:
   test:
@@ -41,7 +41,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     environment: test_environment
-    if: github.event.release.prerelease == true
+    if: github.event_name == 'release' && github.event.release.prerelease == true
     
     steps:
     - uses: actions/checkout@v3
@@ -81,7 +81,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     environment: production_environment
-    if: github.event.release.prerelease == false
+    if: github.event_name == 'release' && github.event.release.prerelease == false
     
     steps:
     - uses: actions/checkout@v3
