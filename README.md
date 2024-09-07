@@ -178,5 +178,5 @@ Distributed under the GNU General Public License Version 3. See the [LICENSE](LI
 
 ## 📚 Documentation
 
-For more detailed documentation, please visit our [GitHub Pages](https://yourusername.github.io/peepdb/).
+For more detailed documentation, please visit our [GitHub Pages](https://peepdb.dev/).
 
