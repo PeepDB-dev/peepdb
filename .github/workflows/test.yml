@@ -7,6 +7,7 @@ on:
     branches: [ main ]
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -17,19 +18,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y libmariadb-dev
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -e .
+
     - name: Run tests
       run: pytest peepdb/tests
 
@@ -41,23 +46,34 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+
+    - name: Clean build directories
+      run: |
+        rm -rf build/ dist/ *.egg-info/
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y libmariadb-dev
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install build
+
     - name: Build package
       run: python -m build
+
     - name: Publish package to TestPyPI
-      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      uses: pypa/gh-action-pypi-publish@v1.5.1
       with:
         user: __token__
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
         repository_url: https://test.pypi.org/legacy/
+        skip_existing: true
+        verbose: true
