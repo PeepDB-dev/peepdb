@@ -3,7 +3,7 @@ title: Contributing
 layout: default
 ---
 
-# Contributing to peepDB
+# 🤝 Contributing to peepDB
 
 Contributions to peepDB are welcome! Whether you're fixing bugs, improving documentation, or proposing new features, your efforts are appreciated. Here's how you can contribute:
 
@@ -25,16 +25,40 @@ Contributions to peepDB are welcome! Whether you're fixing bugs, improving docum
    ```
 6. Open a Pull Request from your fork to the main peepDB repository.
 
+## Setting Up Development Environment
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/evangelosmeklis/peepdb.git
+   cd peepdb
+   ```
+
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install the package in editable mode with development dependencies:
+   ```bash
+   pip install -e .[dev]
+   ```
+
 ## Code Style
 
 - Follow PEP 8 guidelines for Python code.
 - Use meaningful variable and function names.
 - Add comments to explain complex logic.
+- You can use tools like `flake8` or `black` to ensure your code adheres to the style guide.
 
 ## Testing
 
 - Add unit tests for new features or bug fixes.
 - Ensure all existing tests pass before submitting a pull request.
+- Run the test suite using pytest:
+  ```bash
+  pytest
+  ```
 
 ## Documentation
 

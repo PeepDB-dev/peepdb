@@ -1,3 +1,51 @@
 [build-system]
 requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "peepdb"
+version = "0.1.1"
+description = "A quick database table viewer"
+authors = [
+    {name = "Evangelos Meklis", email = "vmeklis@hotmail.com"},
+]
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "GNU General Public License v3 (GPLv3)"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "mysql-connector-python>=9.0.0",
+    "psycopg2-binary>=2.9.9",
+    "pymysql>=1.1.1",
+    "mariadb",
+    "cryptography>=43.0.0",
+    "tabulate>=0.8.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "coverage>=7.6.1",
+    "pytest>=8.3.2",
+    "pytest-cov>=5.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/evangelosmeklis/peepdb"
+"Bug Tracker" = "https://github.com/evangelosmeklis/peepdb/issues"
+
+[project.scripts]
+peepdb = "peepdb.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["peepdb*"]
+exclude = ["tests*"]

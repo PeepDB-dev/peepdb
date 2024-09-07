@@ -14,12 +14,20 @@ setup(
     url="https://github.com/evangelosmeklis/peepdb",
     packages=find_packages(),
     install_requires=[
-        "mysql-connector-python",
-        "psycopg2-binary",
-        "pymysql",
-        "cryptography",
-        "tabulate",
+        "mysql-connector-python>=9.0.0",
+        "psycopg2-binary>=2.9.9",
+        "pymysql>=1.1.1",
+        "mariadb",
+        "cryptography>=43.0.0",
+        "tabulate>=0.8.9",
     ],
+    extras_require={
+        'dev': [
+            'coverage>=7.6.1',
+            'pytest>=8.3.2',
+            'pytest-cov>=5.0.0',
+        ],
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

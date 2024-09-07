@@ -16,22 +16,28 @@ def mock_cursor():
     cursor.description = [('column1',), ('column2',)]
     return cursor
 
-# Test connect_to_database function
 @patch('peepdb.core.mysql.connector.connect')
 @patch('peepdb.core.psycopg2.connect')
 @patch('peepdb.core.pymysql.connect')
 def test_connect_to_database(mock_pymysql, mock_psycopg2, mock_mysql):
     # Test MySQL connection
     connect_to_database('mysql', 'host', 'user', 'password', 'database')
-    mock_mysql.assert_called_once_with(host='host', user='user', password='password', database='database')
+    mock_mysql.assert_called_once_with(host='host', user='user', password='password', database='database', port=3306)
+
+    # Reset the mock
+    mock_mysql.reset_mock()
+
+    # Test with custom port
+    connect_to_database('mysql', 'host', 'user', 'password', 'database', port=3307)
+    mock_mysql.assert_called_once_with(host='host', user='user', password='password', database='database', port=3307)
 
     # Test PostgreSQL connection
     connect_to_database('postgres', 'host', 'user', 'password', 'database')
-    mock_psycopg2.assert_called_once_with(host='host', user='user', password='password', database='database')
+    mock_psycopg2.assert_called_once_with(host='host', user='user', password='password', database='database', port=5432)
 
     # Test MariaDB connection
     connect_to_database('mariadb', 'host', 'user', 'password', 'database')
-    mock_pymysql.assert_called_once_with(host='host', user='user', password='password', database='database')
+    mock_pymysql.assert_called_once_with(host='host', user='user', password='password', database='database', port=3306)
 
     # Test unsupported database type
     with pytest.raises(ValueError):

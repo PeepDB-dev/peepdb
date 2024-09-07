@@ -7,7 +7,7 @@ layout: home
 
 **peepDB** is an open-source command-line tool and Python library designed for developers and database administrators who need a fast and efficient way to inspect their database tables without writing SQL queries. With support for MySQL, PostgreSQL, and MariaDB, peepDB is lightweight, secure, and incredibly easy to use.
 
-## Features
+## 🚀 Features
 
 - **Multi-Database Support**: Works with MySQL, PostgreSQL, and MariaDB.
 - **Quick Data Inspection**: View all tables or a specific table with a simple command.
@@ -20,14 +20,14 @@ layout: home
 
 To get started with peepDB, check out the following pages:
 
-- [Installation](installation.md): Learn how to install peepDB.
-- [Usage](usage.md): Discover how to use peepDB effectively.
-- [Contributing](contributing.md): Find out how you can contribute to the project.
+- [Installation](installation.html): Learn how to install peepDB.
+- [Usage](usage.html): Discover how to use peepDB effectively.
+- [Contributing](contributing.html): Find out how you can contribute to the project.
 
-## Security
+## 🔒 Security
 
 peepDB uses encryption to securely store your database connection details. The encryption key is stored in your user directory (~/.peepdb/key.key). Make sure to keep this key safe and do not share it.
 
-## License
+## 📜 License
 
-peepDB is distributed under the GNU General Public License Version 3. See the [LICENSE](https://github.com/yourusername/peepdb/blob/main/LICENSE) file for more details.
+peepDB is distributed under the GNU General Public License Version 3. See the [LICENSE](https://github.com/evangelosmeklis/peepdb/blob/main/LICENSE) file for more details.

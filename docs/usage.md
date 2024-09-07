@@ -3,7 +3,7 @@ title: Usage
 layout: default
 ---
 
-# Usage
+# 🛠️ Usage
 
 peepDB provides a user-friendly command-line interface for interacting with your databases. Here are the main commands and their usage:
 
