@@ -10,8 +10,9 @@ You can install peepDB directly from PyPI using pip:
 ```bash
 pip install peepdb
 ```
-
 This will install the latest version of peepDB along with all its dependencies.
+
+> **Note:** If peepdb gives an error like "The term 'peepdb' is not recognized as the name of a cmdlet" remember to put the Scripts folder on your PATH in windows
 
 ## Requirements
 
