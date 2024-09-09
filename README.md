@@ -11,6 +11,8 @@
 - **Lightweight**: Minimal footprint, designed for speed.
 - **Formatted Output**: View data in a clean, formatted table or JSON format.
 
+![peepDB Screenshot](images/peepdb_screenshot.png)
+
 ## 📦 Installation
 
 You can install peepDB directly from PyPI:
