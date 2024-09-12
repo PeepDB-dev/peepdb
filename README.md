@@ -11,7 +11,17 @@
 - **Lightweight**: Minimal footprint, designed for speed.
 - **Formatted Output**: View data in a clean, formatted table or JSON format.
 
-![peepDB Screenshot](images/peepdb_screenshot.png)
+## 📢 Upcoming Changes (In Development)
+
+We're working on some exciting updates to peepDB! Here's what's coming in the next version:
+
+- Switching from argparse to Click for an improved CLI experience
+- New command structure for easier and more intuitive use
+- Enhanced help messages and documentation
+
+These changes are currently in development and not yet released. Stay tuned for the upcoming version!
+
+> Note: The current release still uses the argparse-based CLI. The information below reflects the current stable version.
 
 ## 📦 Installation
 
@@ -41,23 +51,21 @@ Verify the installation by running:
 peepdb --version
 ```
 
-## 🛠️ Usage
+## 🛠️ Current Usage (Stable Version)
 
-### For Users
-
-#### 1. Save Your Database Connection Details (Optional)
+### 1. Save Your Database Connection Details (Optional)
 
 ```bash
 peepdb <connection_name> --save --db-type [mysql/postgres/mariadb] --host <host> --user <user> --password <password> --database <database>
 ```
 
-#### 2. List Saved Connections
+### 2. List Saved Connections
 
 ```bash
 peepdb --list
 ```
 
-#### 3. View All Tables or a Specific Table
+### 3. View All Tables or a Specific Table
 
 View all tables:
 ```bash
@@ -69,14 +77,14 @@ View a specific table:
 peepdb <connection_name> --table <table_name>
 ```
 
-#### 4. Choose Output Format
+### 4. Choose Output Format
 
 Get output in JSON format:
 ```bash
 peepdb <connection_name> --format json
 ```
 
-#### 5. Remove Saved Connections
+### 5. Remove Saved Connections
 
 Remove a specific connection:
 ```bash
@@ -88,28 +96,6 @@ Remove all connections:
 peepdb --remove-all
 ```
 
-### Examples
-
-1. **Save MySQL connection details:**
-   ```bash
-   peepdb myapp_db --save --db-type mysql --host localhost --user root --password mypassword --database myapp
-   ```
-
-2. **View all tables in the saved MySQL database:**
-   ```bash
-   peepdb myapp_db
-   ```
-
-3. **View a specific table:**
-   ```bash
-   peepdb myapp_db --table users
-   ```
-
-4. **Get output in JSON format:**
-   ```bash
-   peepdb myapp_db --format json
-   ```
-
 For more detailed usage information, run:
 ```bash
 peepdb --help
@@ -117,67 +103,7 @@ peepdb --help
 
 ## 👨‍💻 For Developers
 
-### Project Structure
-
-```
-peepdb/
-├── peepdb/
-│   ├── __init__.py
-│   ├── cli.py
-│   ├── core.py
-│   └── config.py
-├── tests/
-│   ├── __init__.py
-│   ├── test_cli.py
-│   ├── test_connection.py
-│   ├── test_data_types.py
-│   └── test_peepdb.py
-├── setup.py
-└── pyproject.toml
-```
-
-### Setting Up Development Environment
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/peepdb.git
-   cd peepdb
-   ```
-
-2. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install the package in editable mode with development dependencies:
-   ```bash
-   pip install -e .[dev]
-   ```
-
-### Running Tests
-
-Run the test suite using pytest:
-
-```bash
-pytest
-```
-
-### Code Style
-
-We follow PEP 8 guidelines. You can use tools like `flake8` or `black` to ensure your code adheres to the style guide.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-For more details, please read our [Contributing Guide](CONTRIBUTING.md).
+Please refer to our [Contributing Guide](CONTRIBUTING.md) for information on setting up the development environment, running tests, and contributing to peepDB.
 
 ## 🔒 Security
 
@@ -190,4 +116,3 @@ Distributed under the GNU General Public License Version 3. See the [LICENSE](LI
 ## 📚 Documentation
 
 For more detailed documentation, please visit our [GitHub Pages](https://peepdb.dev/).
-
