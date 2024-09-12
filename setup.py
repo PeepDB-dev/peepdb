@@ -17,9 +17,10 @@ setup(
         "mysql-connector-python>=9.0.0",
         "psycopg2-binary>=2.9.9",
         "pymysql>=1.1.1",
-        "mariadb",
         "cryptography>=43.0.0",
         "tabulate>=0.8.9",
+        "click>=8.0.0",
+        "mariadb",
     ],
     extras_require={
         'dev': [

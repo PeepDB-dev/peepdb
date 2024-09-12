@@ -2,6 +2,7 @@ mysql-connector-python
 psycopg2-binary
 pymysql
 mariadb
+click
 coverage==7.6.1
 cryptography==43.0.0
 iniconfig==2.0.0
