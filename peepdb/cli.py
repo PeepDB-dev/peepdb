@@ -37,7 +37,9 @@ def cli():
 @click.argument('connection_name')
 @click.option('--table', help='Specific table to view')
 @click.option('--format', type=click.Choice(['table', 'json']), default='table', help='Output format')
-def view(connection_name, table, format):
+@click.option('--page', type=int, default=1, help='Page number for pagination')
+@click.option('--page-size', type=int, default=100, help='Number of rows per page')
+def view(connection_name, table, format, page, page_size):
     """
     View database tables.
 
@@ -45,7 +47,7 @@ def view(connection_name, table, format):
 
     Examples:
     peepdb view mydb
-    peepdb view mydb --table users
+    peepdb view mydb --table users --page 2 --page-size 50
     peepdb view mydb --format json
     """
     connection = get_connection(connection_name)
@@ -54,10 +56,15 @@ def view(connection_name, table, format):
         return
 
     db_type, host, user, password, database = connection
-    result = peep_db(db_type, host, user, password, database, table, format=format)
+    result = peep_db(db_type, host, user, password, database, table, format=format, page=page, page_size=page_size)
 
     if format == 'table':
         click.echo(result)
+        if table:
+            click.echo("\nNavigation:")
+            click.echo(f"Current Page: {page}")
+            click.echo(f"Next Page: peepdb view {connection_name} --table {table} --page {page + 1} --page-size {page_size}")
+            click.echo(f"Previous Page: peepdb view {connection_name} --table {table} --page {max(1, page - 1)} --page-size {page_size}")
     else:
         click.echo(json.dumps(result, indent=2, cls=CustomEncoder))
 

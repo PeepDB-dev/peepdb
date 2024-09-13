@@ -6,22 +6,13 @@
 
 - **Multi-Database Support**: Works with MySQL, PostgreSQL, and MariaDB.
 - **Quick Data Inspection**: View all tables or a specific table with a simple command.
-- **User-Friendly CLI**: Easy-to-use command-line interface.
-- **Secure Storage**: Securely store database connection details with encryption.
+- **User-Friendly CLI**: Easy-to-use command-line interface powered by Click.
+- **Secure Local Storage**: Securely store database connection details with encryption on your local machine.
 - **Lightweight**: Minimal footprint, designed for speed.
 - **Formatted Output**: View data in a clean, formatted table or JSON format.
+- **Pagination**: Efficiently handle large datasets by viewing data in manageable chunks.
 
-## 📢 Upcoming Changes (In Development)
-
-We're working on some exciting updates to peepDB! Here's what's coming in the next version:
-
-- Switching from argparse to Click for an improved CLI experience
-- New command structure for easier and more intuitive use
-- Enhanced help messages and documentation
-
-These changes are currently in development and not yet released. Stay tuned for the upcoming version!
-
-> Note: The current release still uses the argparse-based CLI. The information below reflects the current stable version.
+![peepDB Screenshot](images/peepdb_screenshot.png)
 
 ## 📦 Installation
 
@@ -51,54 +42,64 @@ Verify the installation by running:
 peepdb --version
 ```
 
-## 🛠️ Current Usage (Stable Version)
+## 🛠️ Usage
 
-### 1. Save Your Database Connection Details (Optional)
+peepDB uses a command-based structure for easier and more intuitive use. Here are the main commands:
+
+### 1. Save Your Database Connection Details
 
 ```bash
-peepdb <connection_name> --save --db-type [mysql/postgres/mariadb] --host <host> --user <user> --password <password> --database <database>
+peepdb save <connection_name> --db-type [mysql/postgres/mariadb] --host <host> --user <user> --database <database>
 ```
+You'll be prompted securely for the password.
 
 ### 2. List Saved Connections
 
 ```bash
-peepdb --list
+peepdb list
 ```
 
-### 3. View All Tables or a Specific Table
+### 3. View Tables
 
 View all tables:
 ```bash
-peepdb <connection_name>
+peepdb view <connection_name>
 ```
 
 View a specific table:
 ```bash
-peepdb <connection_name> --table <table_name>
+peepdb view <connection_name> --table <table_name>
 ```
 
-### 4. Choose Output Format
+### 4. Pagination
+
+Use pagination to handle large datasets:
+```bash
+peepdb view <connection_name> --table <table_name> --page <page_number> --page-size <rows_per_page>
+```
+
+### 5. Choose Output Format
 
 Get output in JSON format:
 ```bash
-peepdb <connection_name> --format json
+peepdb view <connection_name> --format json
 ```
 
-### 5. Remove Saved Connections
+### 6. Remove Saved Connections
 
 Remove a specific connection:
 ```bash
-peepdb --remove <connection_name>
+peepdb remove <connection_name>
 ```
 
 Remove all connections:
 ```bash
-peepdb --remove-all
+peepdb remove-all
 ```
 
-For more detailed usage information, run:
+For more detailed usage information on any command, use the `--help` option:
 ```bash
-peepdb --help
+peepdb <command> --help
 ```
 
 ## 👨‍💻 For Developers
@@ -107,7 +108,15 @@ Please refer to our [Contributing Guide](CONTRIBUTING.md) for information on set
 
 ## 🔒 Security
 
-peepDB uses encryption to securely store database connection details. The encryption key is stored in your user directory (~/.peepdb/key.key). Keep this key safe and do not share it.
+peepDB implements several security measures to protect your database connection details:
+
+1. **Local Storage**: All connection details are stored locally on your machine, not on any remote servers.
+2. **Encryption**: Connection details are encrypted before being stored, using the cryptography library.
+3. **Secure Password Input**: Passwords are never shown in plain text and are input securely.
+
+However, please note that while we strive to implement best security practices, peepDB's security has not been verified by a third party. Users should exercise caution and follow general security best practices when using any tool that handles sensitive information.
+
+The encryption key is stored in your user directory (~/.peepdb/key.key). Keep this key safe and do not share it.
 
 ## 📜 License
 
