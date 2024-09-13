@@ -13,7 +13,8 @@ def mock_db_connection():
 def mock_cursor():
     cursor = Mock()
     cursor.fetchall.return_value = [('table1',), ('table2',)]
-    cursor.description = [('column1',), ('column2',)]
+    cursor.fetchone.return_value = (2,)  # Mock the total number of rows
+    cursor.description = [('id', 'INT'), ('name', 'VARCHAR')]
     return cursor
 
 @patch('peepdb.core.mysql.connector.connect')
@@ -52,32 +53,42 @@ def test_fetch_tables(mock_cursor):
     assert fetch_tables(mock_cursor, 'postgres') == ['table1', 'table2']
     mock_cursor.execute.assert_called_once_with("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
 
-# Test view_table function
+    mock_cursor.reset_mock()
+    assert fetch_tables(mock_cursor, 'mariadb') == ['table1', 'table2']
+    mock_cursor.execute.assert_called_once_with("SHOW TABLES")
+
+
 def test_view_table(mock_cursor):
     mock_cursor.fetchall.return_value = [(1, 'value1'), (2, 'value2')]
     result = view_table(mock_cursor, 'test_table')
-    assert result == [{'column1': 1, 'column2': 'value1'}, {'column1': 2, 'column2': 'value2'}]
-    mock_cursor.execute.assert_called_once_with("SELECT * FROM test_table")
+    assert result == {
+        'data': [{'id': 1, 'name': 'value1'}, {'id': 2, 'name': 'value2'}],
+        'page': 1,
+        'total_pages': 1,
+        'total_rows': 2
+    }
+    mock_cursor.execute.assert_any_call("SELECT COUNT(*) FROM test_table")
+    mock_cursor.execute.assert_any_call("SELECT * FROM test_table LIMIT 100 OFFSET 0")
 
-# Updated test_peep_db function
 @patch('peepdb.core.connect_to_database')
 @patch('peepdb.core.fetch_tables')
 @patch('peepdb.core.view_table')
 def test_peep_db(mock_view_table, mock_fetch_tables, mock_connect):
     mock_connect.return_value.cursor.return_value = Mock()
     mock_fetch_tables.return_value = ['table1', 'table2']
-    mock_view_table.return_value = ['row1']  # Changed this line
+    mock_view_table.return_value = {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}
 
     # Test without specifying a table
     result = peep_db('mysql', 'host', 'user', 'password', 'database', format='json')
-    assert result == {'table1': ['row1'], 'table2': ['row1']}
+    assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}, 
+                      'table2': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}}
 
     # Test with a specific table
     result = peep_db('mysql', 'host', 'user', 'password', 'database', table='table1', format='json')
-    assert result == {'table1': ['row1']}
+    assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}}
 
     # Verify that view_table was called with the correct arguments
-    mock_view_table.assert_called_with(mock_connect.return_value.cursor.return_value, 'table1')
+    mock_view_table.assert_called_with(mock_connect.return_value.cursor.return_value, 'table1', 1, 100)
 
 # Test configuration functions
 @patch('peepdb.config.os.path.exists')
