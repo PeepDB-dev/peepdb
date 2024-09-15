@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="peepdb",
-    version="0.1.2",
+    version="0.1.3",
     author="Evangelos Meklis",
     author_email="vmeklis@hotmail.com",
     description="A quick database table viewer",
