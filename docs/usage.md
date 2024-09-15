@@ -12,15 +12,17 @@ peepDB provides a user-friendly command-line interface for interacting with your
 You can securely store your connection details for easier access:
 
 ```bash
-peepdb <connection_name> --save --db-type [mysql/postgres/mariadb] --host <host> --user <user> --password <password> --database <database>
+peepdb save <connection_name> --db-type [mysql/postgres/mariadb] --host <host> --user <user> --database <database>
 ```
+
+You'll be prompted securely for the password.
 
 ## Listing Saved Connections
 
 To view all saved database connections:
 
 ```bash
-peepdb --list
+peepdb list
 ```
 
 ## Viewing Tables
@@ -28,13 +30,21 @@ peepdb --list
 To view all tables in the database:
 
 ```bash
-peepdb <connection_name>
+peepdb view <connection_name>
 ```
 
 To view a specific table:
 
 ```bash
-peepdb <connection_name> --table <table_name>
+peepdb view <connection_name> --table <table_name>
+```
+
+## Pagination
+
+Use pagination to handle large datasets:
+
+```bash
+peepdb view <connection_name> --table <table_name> --page <page_number> --page-size <rows_per_page>
 ```
 
 ## Choosing Output Format
@@ -42,7 +52,7 @@ peepdb <connection_name> --table <table_name>
 By default, peepDB displays data in a formatted table. You can also get the output in JSON format:
 
 ```bash
-peepdb <connection_name> --format json
+peepdb view <connection_name> --format json
 ```
 
 ## Removing Saved Connections
@@ -50,16 +60,24 @@ peepdb <connection_name> --format json
 To remove a specific saved connection:
 
 ```bash
-peepdb --remove <connection_name>
+peepdb remove <connection_name>
 ```
 
 To remove all saved connections:
 
 ```bash
-peepdb --remove-all
+peepdb remove-all
 ```
 
 > **Note:** Both of these commands will ask for confirmation before proceeding with the removal.
+
+## Help
+
+For more detailed usage information on any command, use the `--help` option:
+
+```bash
+peepdb <command> --help
+```
 
 ## Examples
 
@@ -67,31 +85,27 @@ Here are some example commands to help you get started:
 
 1. Save MySQL connection details:
    ```bash
-   peepdb myapp_db --save --db-type mysql --host localhost --user root --password mypassword --database myapp
+   peepdb save myapp_db --db-type mysql --host localhost --user root --database myapp
    ```
 
 2. View all tables in the saved MySQL database:
    ```bash
-   peepdb myapp_db
+   peepdb view myapp_db
    ```
 
-3. View a specific table:
+3. View a specific table with pagination:
    ```bash
-   peepdb myapp_db --table users
+   peepdb view myapp_db --table users --page 1 --page-size 50
    ```
 
 4. Get output in JSON format:
    ```bash
-   peepdb myapp_db --format json
+   peepdb view myapp_db --format json
    ```
 
-5. Use PostgreSQL without saving details:
+5. Remove a saved connection:
    ```bash
-   peepdb --db-type postgres --host localhost --user postgres --password mypassword --database analytics
+   peepdb remove myapp_db
    ```
 
-For more detailed information on each command and its options, you can use the built-in help:
-
-```bash
-peepdb --help
-```
+Remember to use the `--help` option with any command for more detailed information on its usage and options.

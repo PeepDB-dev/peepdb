@@ -15,7 +15,7 @@ This will install the latest version of peepDB along with all its dependencies.
 
 ## Requirements
 
-- Python 3.6 or higher
+- Python 3.9 or higher
 - pip (Python package installer)
 
 ## System Dependencies
