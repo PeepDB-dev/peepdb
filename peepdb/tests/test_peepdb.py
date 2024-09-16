@@ -3,10 +3,12 @@ from unittest.mock import Mock, patch
 from peepdb.core import peep_db, connect_to_database, fetch_tables, view_table
 from peepdb.config import save_connection, get_connection, list_connections, remove_connection, remove_all_connections
 
+
 # Mock database connection
 @pytest.fixture
 def mock_db_connection():
     return Mock()
+
 
 # Mock cursor
 @pytest.fixture
@@ -16,6 +18,7 @@ def mock_cursor():
     cursor.fetchone.return_value = (2,)  # Mock the total number of rows
     cursor.description = [('id', 'INT'), ('name', 'VARCHAR')]
     return cursor
+
 
 @patch('peepdb.core.mysql.connector.connect')
 @patch('peepdb.core.psycopg2.connect')
@@ -44,6 +47,7 @@ def test_connect_to_database(mock_pymysql, mock_psycopg2, mock_mysql):
     with pytest.raises(ValueError):
         connect_to_database('unsupported', 'host', 'user', 'password', 'database')
 
+
 # Test fetch_tables function
 def test_fetch_tables(mock_cursor):
     assert fetch_tables(mock_cursor, 'mysql') == ['table1', 'table2']
@@ -51,7 +55,8 @@ def test_fetch_tables(mock_cursor):
 
     mock_cursor.reset_mock()
     assert fetch_tables(mock_cursor, 'postgres') == ['table1', 'table2']
-    mock_cursor.execute.assert_called_once_with("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
+    mock_cursor.execute.assert_called_once_with(
+        "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
 
     mock_cursor.reset_mock()
     assert fetch_tables(mock_cursor, 'mariadb') == ['table1', 'table2']
@@ -70,6 +75,7 @@ def test_view_table(mock_cursor):
     mock_cursor.execute.assert_any_call("SELECT COUNT(*) FROM test_table")
     mock_cursor.execute.assert_any_call("SELECT * FROM test_table LIMIT 100 OFFSET 0")
 
+
 @patch('peepdb.core.connect_to_database')
 @patch('peepdb.core.fetch_tables')
 @patch('peepdb.core.view_table')
@@ -80,7 +86,7 @@ def test_peep_db(mock_view_table, mock_fetch_tables, mock_connect):
 
     # Test without specifying a table
     result = peep_db('mysql', 'host', 'user', 'password', 'database', format='json')
-    assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}, 
+    assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1},
                       'table2': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}}
 
     # Test with a specific table
@@ -89,6 +95,7 @@ def test_peep_db(mock_view_table, mock_fetch_tables, mock_connect):
 
     # Verify that view_table was called with the correct arguments
     mock_view_table.assert_called_with(mock_connect.return_value.cursor.return_value, 'table1', 1, 100)
+
 
 # Test configuration functions
 @patch('peepdb.config.os.path.exists')
@@ -134,6 +141,7 @@ def test_config_functions(mock_decrypt, mock_encrypt, mock_json_dump, mock_json_
     mock_json_load.return_value = {'test_conn': {}, 'other_conn': {}}
     assert remove_all_connections() == 2
     # Assert that os.remove was called with the correct arguments
+
 
 if __name__ == '__main__':
     pytest.main()

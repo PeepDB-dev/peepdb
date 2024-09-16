@@ -6,6 +6,7 @@ CONFIG_DIR = os.path.expanduser("~/.peepdb")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 KEY_FILE = os.path.join(CONFIG_DIR, "key.key")
 
+
 def get_key():
     if not os.path.exists(KEY_FILE):
         key = Fernet.generate_key()
@@ -16,11 +17,14 @@ def get_key():
             key = key_file.read()
     return key
 
+
 def encrypt(message: str) -> str:
     return Fernet(get_key()).encrypt(message.encode()).decode()
 
+
 def decrypt(token: str) -> str:
     return Fernet(get_key()).decrypt(token.encode()).decode()
+
 
 def save_connection(name, db_type, host, user, password, database):
     if not os.path.exists(CONFIG_DIR):
@@ -42,6 +46,7 @@ def save_connection(name, db_type, host, user, password, database):
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f)
 
+
 def get_connection(name):
     if not os.path.exists(CONFIG_FILE):
         return None
@@ -61,6 +66,7 @@ def get_connection(name):
         decrypt(conn["database"])
     )
 
+
 def list_connections():
     if not os.path.exists(CONFIG_FILE):
         print("No saved connections.")
@@ -77,7 +83,8 @@ def list_connections():
     for name, details in config.items():
         db_type = details.get('db_type', 'Unknown')
         print(f"- {name} ({db_type})")
-    
+
+
 def remove_connection(name):
     if not os.path.exists(CONFIG_FILE):
         return False
@@ -94,6 +101,7 @@ def remove_connection(name):
         json.dump(config, f)
 
     return True
+
 
 def remove_all_connections():
     if not os.path.exists(CONFIG_FILE):
@@ -112,5 +120,5 @@ def remove_all_connections():
     except json.JSONDecodeError:
         # File exists but is not valid JSON
         os.remove(CONFIG_FILE)
-    
+
     return count
