@@ -1,3 +1,4 @@
+from peepdb.dbtypes import peepdb_mysql, peepdb_mariadb, peepdb_postgresql
 import mysql.connector
 import psycopg2
 import pymysql
@@ -15,14 +16,14 @@ def connect_to_database(db_type, host, user, password, database, port=None, **kw
     logger.debug(f"Attempting to connect to {db_type} database '{database}' on host '{host}' with user '{user}'")
     try:
         if db_type == 'mysql':
-            conn = mysql.connector.connect(host=host, user=user, password=password, database=database,
-                                           port=port or 3306, **kwargs)
-        elif db_type == 'postgres':
-            conn = psycopg2.connect(host=host, user=user, password=password, database=database, port=port or 5432,
-                                    **kwargs)
+            conn = peepdb_mysql.connect_to_db(host=host, user=user, password=password, database=database,
+                                              port=port or 3306, **kwargs)
         elif db_type == 'mariadb':
-            conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port or 3306,
-                                   **kwargs)
+            conn = peepdb_mariadb.connect_to_db(host=host, user=user, password=password, database=database,
+                                                port=port or 3306, **kwargs)
+        elif db_type == 'postgres':
+            conn = peepdb_postgresql.connect_to_db(host=host, user=user, password=password, database=database,
+                                                   port=port or 5432, **kwargs)
         else:
             raise ValueError("Unsupported database type")
         logger.debug("Connection successful")
@@ -33,11 +34,14 @@ def connect_to_database(db_type, host, user, password, database, port=None, **kw
 
 
 def fetch_tables(cursor, db_type):
-    if db_type in ['mysql', 'mariadb']:
-        cursor.execute("SHOW TABLES")
+    tables = []
+    if db_type == 'mysql':
+        tables = peepdb_mysql.fetch_tables(cursor)
+    elif db_type == 'mariadb':
+        tables = peepdb_mariadb.fetch_tables(cursor)
     elif db_type == 'postgres':
-        cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
-    return [table[0] for table in cursor.fetchall()]
+        tables = peepdb_postgresql.fetch_tables(cursor)
+    return [table[0] for table in tables]
 
 
 def view_table(cursor, table_name, page=1, page_size=100):
