@@ -9,15 +9,19 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
 def connect_to_database(db_type, host, user, password, database, port=None, **kwargs):
     logger.debug(f"Attempting to connect to {db_type} database '{database}' on host '{host}' with user '{user}'")
     try:
         if db_type == 'mysql':
-            conn = mysql.connector.connect(host=host, user=user, password=password, database=database, port=port or 3306, **kwargs)
+            conn = mysql.connector.connect(host=host, user=user, password=password, database=database,
+                                           port=port or 3306, **kwargs)
         elif db_type == 'postgres':
-            conn = psycopg2.connect(host=host, user=user, password=password, database=database, port=port or 5432, **kwargs)
+            conn = psycopg2.connect(host=host, user=user, password=password, database=database, port=port or 5432,
+                                    **kwargs)
         elif db_type == 'mariadb':
-            conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port or 3306, **kwargs)
+            conn = pymysql.connect(host=host, user=user, password=password, database=database, port=port or 3306,
+                                   **kwargs)
         else:
             raise ValueError("Unsupported database type")
         logger.debug("Connection successful")

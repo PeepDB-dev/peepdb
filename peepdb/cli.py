@@ -5,6 +5,7 @@ import json
 from decimal import Decimal
 from datetime import date
 
+
 class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
@@ -12,6 +13,7 @@ class CustomEncoder(json.JSONEncoder):
         elif isinstance(obj, date):
             return obj.isoformat()
         return super(CustomEncoder, self).default(obj)
+
 
 @click.group()
 @click.version_option()
@@ -32,6 +34,7 @@ def cli():
     Use 'peepdb COMMAND --help' for more information on a specific command.
     """
     pass
+
 
 @cli.command()
 @click.argument('connection_name')
@@ -63,10 +66,13 @@ def view(connection_name, table, format, page, page_size):
         if table:
             click.echo("\nNavigation:")
             click.echo(f"Current Page: {page}")
-            click.echo(f"Next Page: peepdb view {connection_name} --table {table} --page {page + 1} --page-size {page_size}")
-            click.echo(f"Previous Page: peepdb view {connection_name} --table {table} --page {max(1, page - 1)} --page-size {page_size}")
+            click.echo(
+                f"Next Page: peepdb view {connection_name} --table {table} --page {page + 1} --page-size {page_size}")
+            click.echo(
+                f"Previous Page: peepdb view {connection_name} --table {table} --page {max(1, page - 1)} --page-size {page_size}")
     else:
         click.echo(json.dumps(result, indent=2, cls=CustomEncoder))
+
 
 @cli.command()
 @click.argument('connection_name')
@@ -87,6 +93,7 @@ def save(connection_name, db_type, host, user, password, database):
     save_connection(connection_name, db_type, host, user, password, database)
     click.echo(f"Connection '{connection_name}' saved successfully.")
 
+
 @cli.command()
 def list():
     """
@@ -98,6 +105,7 @@ def list():
     peepdb list
     """
     list_connections()
+
 
 @cli.command()
 @click.argument('connection_name')
@@ -116,6 +124,7 @@ def remove(connection_name):
     else:
         click.echo(f"No connection named '{connection_name}' found.")
 
+
 @cli.command()
 @click.confirmation_option(prompt='Are you sure you want to remove ALL saved connections?')
 def remove_all():
@@ -131,8 +140,10 @@ def remove_all():
     count = remove_all_connections()
     click.echo(f"{count} connection(s) have been removed.")
 
+
 def main():
     cli()
+
 
 if __name__ == '__main__':
     main()
