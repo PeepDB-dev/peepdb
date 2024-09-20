@@ -20,9 +20,9 @@ Here's a quick demonstration of peepDB:
 
 ## 🖼️ peepDB stills
 
-![peepDB example 1](images/peepdb_example1.png)
 ![peepDB example 2](images/peepdb_example2.png)
-> **Note:** The above images reflect the commands used in the official release (v0.1.3)
+
+> **Note:** The above image reflect the commands used in the official release (v0.1.3)
 
 ## 📦 Installation
 
