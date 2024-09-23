@@ -9,7 +9,7 @@ from cachetools import TTLCache, cached
 from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
+from .exceptions import InvalidPassword
 
 @dataclass
 class KeySecurity():
@@ -119,7 +119,7 @@ def get_connection(name):
             decrypt(conn["database"])
         )
     except InvalidToken:
-        print("Password is invalid !!!")
+        raise InvalidPassword("Password is invalid !!!")
 
 
 def list_connections():

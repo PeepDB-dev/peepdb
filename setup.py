@@ -21,6 +21,8 @@ setup(
         "tabulate>=0.8.9",
         "click>=8.0.0",
         "mariadb",
+        "cachetools>=5.5.0",
+        "keyring>=25.4.1",
     ],
     extras_require={
         'dev': [
