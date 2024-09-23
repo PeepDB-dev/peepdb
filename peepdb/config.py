@@ -1,20 +1,72 @@
-import os
+import base64
 import json
-from cryptography.fernet import Fernet
+import os
+from dataclasses import dataclass
+
+import click
+import keyring
+from cachetools import TTLCache, cached
+from cryptography.fernet import Fernet, InvalidToken
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from .exceptions import InvalidPassword
+
+@dataclass
+class KeySecurity():
+    KEYRING = "os-keyring"
+    PASSWORD = "password"
+
 
 CONFIG_DIR = os.path.expanduser("~/.peepdb")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
-KEY_FILE = os.path.join(CONFIG_DIR, "key.key")
+SECURITY_CONFIG_FILE = os.path.join(CONFIG_DIR, "security_config.json")
+KEYRING_USERNAME = "PEEP_DB_KEY"
+KEYRING_SERVICE_NAME = "PEEP_DB"
+
+
+@cached(cache=TTLCache(maxsize=1024, ttl=600))
+def generate_key_from_password(salt):
+    password = click.prompt("Please entry the password to encrpyt/decrpty DB passwords",
+                            type=str).encode('utf-8')
+    salt = base64.b64decode(salt)
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=480000,
+    )
+    return base64.urlsafe_b64encode(kdf.derive(password)).decode("utf-8")
+
+
+@cached(cache=TTLCache(maxsize=1024, ttl=600))
+def fetch_key_from_keyring():
+    key = keyring.get_password(KEYRING_SERVICE_NAME, KEYRING_USERNAME)
+    if not key:
+        key = Fernet.generate_key().decode("utf-8")
+        keyring.set_password(KEYRING_SERVICE_NAME, KEYRING_USERNAME, key)
+    return key
+
+
+def get_key_security_config():
+    security_config = {}
+    if os.path.exists(SECURITY_CONFIG_FILE):
+        with open(SECURITY_CONFIG_FILE, "r") as f:
+            security_config = json.load(f)
+
+    if "PEEP_DB_KEY_SECURITY" not in security_config:
+        security_config = add_key_security()
+
+    return security_config['PEEP_DB_KEY_SECURITY']
 
 
 def get_key():
-    if not os.path.exists(KEY_FILE):
-        key = Fernet.generate_key()
-        with open(KEY_FILE, "wb") as key_file:
-            key_file.write(key)
+    key_security_config = get_key_security_config()
+    if key_security_config['type'] == KeySecurity.KEYRING:
+        # Fetching encryption key from keyring
+        key = fetch_key_from_keyring()
     else:
-        with open(KEY_FILE, "rb") as key_file:
-            key = key_file.read()
+        # Dynamically generating encryption key from users input
+        key = generate_key_from_password(key_security_config['salt'])
     return key
 
 
@@ -58,13 +110,16 @@ def get_connection(name):
         return None
 
     conn = config[name]
-    return (
-        conn["db_type"],
-        decrypt(conn["host"]),
-        decrypt(conn["user"]),
-        decrypt(conn["password"]),
-        decrypt(conn["database"])
-    )
+    try:
+        return (
+            conn["db_type"],
+            decrypt(conn["host"]),
+            decrypt(conn["user"]),
+            decrypt(conn["password"]),
+            decrypt(conn["database"])
+        )
+    except InvalidToken:
+        raise InvalidPassword("Password is invalid !!!")
 
 
 def list_connections():
@@ -122,3 +177,16 @@ def remove_all_connections():
         os.remove(CONFIG_FILE)
 
     return count
+
+
+def add_key_security():
+    security_config = {}
+    key_security = click.prompt('Specify the way you want to store your encryption key',
+                                type=click.Choice([KeySecurity.KEYRING, KeySecurity.PASSWORD]))
+    security_config['PEEP_DB_KEY_SECURITY'] = {"type": key_security}
+    if key_security == KeySecurity.PASSWORD:
+        security_config["PEEP_DB_KEY_SECURITY"]['salt'] = base64.b64encode(
+            os.urandom(16)).decode('utf-8')
+    with open(SECURITY_CONFIG_FILE, "w") as f:
+        json.dump(security_config, f)
+    return security_config
