@@ -12,6 +12,18 @@
 - **Formatted Output**: View data in a clean, formatted table or JSON format.
 - **Pagination**: Efficiently handle large datasets by viewing data in manageable chunks.
 
+## 🎬 peepDB in Action
+
+Here's a quick demonstration of peepDB:
+
+![peepDB Demo](images/demo.gif)
+
+## 🖼️ peepDB stills
+
+![peepDB example 2](images/peepdb_example2.png)
+
+> **Note:** The above image reflects the commands used in the official release (v0.1.3)
+
 ## 📦 Installation
 
 You can install peepDB directly from PyPI:
