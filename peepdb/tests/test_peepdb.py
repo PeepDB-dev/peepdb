@@ -1,101 +1,52 @@
 import pytest
 from unittest.mock import Mock, patch
-from peepdb.core import peep_db, connect_to_database, fetch_tables, view_table
+from peepdb.core import peep_db
 from peepdb.config import save_connection, get_connection, list_connections, remove_connection, remove_all_connections
+from peepdb.db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase
 
-
-# Mock database connection
 @pytest.fixture
-def mock_db_connection():
-    return Mock()
-
-
-# Mock cursor
-@pytest.fixture
-def mock_cursor():
-    cursor = Mock()
-    cursor.fetchall.return_value = [('table1',), ('table2',)]
-    cursor.fetchone.return_value = (2,)  # Mock the total number of rows
-    cursor.description = [('id', 'INT'), ('name', 'VARCHAR')]
-    return cursor
-
-
-@patch('peepdb.core.mysql.connector.connect')
-@patch('peepdb.core.psycopg2.connect')
-@patch('peepdb.core.pymysql.connect')
-def test_connect_to_database(mock_pymysql, mock_psycopg2, mock_mysql):
-    # Test MySQL connection
-    connect_to_database('mysql', 'host', 'user', 'password', 'database')
-    mock_mysql.assert_called_once_with(host='host', user='user', password='password', database='database', port=3306)
-
-    # Reset the mock
-    mock_mysql.reset_mock()
-
-    # Test with custom port
-    connect_to_database('mysql', 'host', 'user', 'password', 'database', port=3307)
-    mock_mysql.assert_called_once_with(host='host', user='user', password='password', database='database', port=3307)
-
-    # Test PostgreSQL connection
-    connect_to_database('postgres', 'host', 'user', 'password', 'database')
-    mock_psycopg2.assert_called_once_with(host='host', user='user', password='password', database='database', port=5432)
-
-    # Test MariaDB connection
-    connect_to_database('mariadb', 'host', 'user', 'password', 'database')
-    mock_pymysql.assert_called_once_with(host='host', user='user', password='password', database='database', port=3306)
-
-    # Test unsupported database type
-    with pytest.raises(ValueError):
-        connect_to_database('unsupported', 'host', 'user', 'password', 'database')
-
-
-# Test fetch_tables function
-def test_fetch_tables(mock_cursor):
-    assert fetch_tables(mock_cursor, 'mysql') == ['table1', 'table2']
-    mock_cursor.execute.assert_called_once_with("SHOW TABLES")
-
-    mock_cursor.reset_mock()
-    assert fetch_tables(mock_cursor, 'postgres') == ['table1', 'table2']
-    mock_cursor.execute.assert_called_once_with(
-        "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
-
-    mock_cursor.reset_mock()
-    assert fetch_tables(mock_cursor, 'mariadb') == ['table1', 'table2']
-    mock_cursor.execute.assert_called_once_with("SHOW TABLES")
-
-
-def test_view_table(mock_cursor):
-    mock_cursor.fetchall.return_value = [(1, 'value1'), (2, 'value2')]
-    result = view_table(mock_cursor, 'test_table')
-    assert result == {
-        'data': [{'id': 1, 'name': 'value1'}, {'id': 2, 'name': 'value2'}],
+def mock_db():
+    db = Mock()
+    db.fetch_tables.return_value = ['table1', 'table2']
+    db.fetch_data.return_value = {
+        'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}],
         'page': 1,
         'total_pages': 1,
         'total_rows': 2
     }
-    mock_cursor.execute.assert_any_call("SELECT COUNT(*) FROM test_table")
-    mock_cursor.execute.assert_any_call("SELECT * FROM test_table LIMIT 100 OFFSET 0")
+    return db
 
+@patch('peepdb.core.MySQLDatabase')
+@patch('peepdb.core.PostgreSQLDatabase')
+@patch('peepdb.core.MariaDBDatabase')
+def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_db):
+    mock_mysql.return_value = mock_db
+    mock_postgresql.return_value = mock_db
+    mock_mariadb.return_value = mock_db
 
-@patch('peepdb.core.connect_to_database')
-@patch('peepdb.core.fetch_tables')
-@patch('peepdb.core.view_table')
-def test_peep_db(mock_view_table, mock_fetch_tables, mock_connect):
-    mock_connect.return_value.cursor.return_value = Mock()
-    mock_fetch_tables.return_value = ['table1', 'table2']
-    mock_view_table.return_value = {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}
-
-    # Test without specifying a table
+    # Test MySQL
     result = peep_db('mysql', 'host', 'user', 'password', 'database', format='json')
-    assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1},
-                      'table2': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}}
+    assert result == {
+        'table1': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2},
+        'table2': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2}
+    }
 
-    # Test with a specific table
-    result = peep_db('mysql', 'host', 'user', 'password', 'database', table='table1', format='json')
-    assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}}
+    # Test PostgreSQL
+    result = peep_db('postgres', 'host', 'user', 'password', 'database', table='table1', format='json')
+    assert result == {
+        'table1': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2}
+    }
 
-    # Verify that view_table was called with the correct arguments
-    mock_view_table.assert_called_with(mock_connect.return_value.cursor.return_value, 'table1', 1, 100)
+    # Test MariaDB
+    result = peep_db('mariadb', 'host', 'user', 'password', 'database', format='json')
+    assert result == {
+        'table1': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2},
+        'table2': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2}
+    }
 
+    # Test unsupported database type
+    with pytest.raises(ValueError):
+        peep_db('unsupported', 'host', 'user', 'password', 'database')
 
 # Test configuration functions
 @patch('peepdb.config.os.path.exists')
@@ -141,7 +92,6 @@ def test_config_functions(mock_decrypt, mock_encrypt, mock_json_dump, mock_json_
     mock_json_load.return_value = {'test_conn': {}, 'other_conn': {}}
     assert remove_all_connections() == 2
     # Assert that os.remove was called with the correct arguments
-
 
 if __name__ == '__main__':
     pytest.main()

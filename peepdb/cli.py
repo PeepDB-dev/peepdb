@@ -24,12 +24,19 @@ def cli():
     This tool allows you to quickly inspect database tables without writing SQL queries.
     It supports MySQL, PostgreSQL, and MariaDB.
 
-    Commands:
-    - view: View database tables
-    - save: Save a new database connection
-    - list: List saved connections
-    - remove: Remove a specific saved connection
-    - remove-all: Remove all saved connections
+    Usage examples:
+    
+    1. Save a new database connection:
+       peepdb save postgres1 --db-type postgres --host localhost --user postgres --password YourPassword --database peepdb_test
+
+    2. View all tables in a saved connection:
+       peepdb view postgres1
+
+    3. View a specific table with pagination:
+       peepdb view postgres1 --table users --page 2 --page-size 50
+
+    4. Remove a saved connection:
+       peepdb remove postgres1
 
     Use 'peepdb COMMAND --help' for more information on a specific command.
     """
@@ -79,7 +86,7 @@ def view(connection_name, table, format, page, page_size):
 @click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb']), required=True, help='Database type')
 @click.option('--host', required=True, help='Database host')
 @click.option('--user', required=True, help='Database user')
-@click.option('--password', required=True, prompt=True, hide_input=True, help='Database password')
+@click.option('--password', required=True, help='Database password')
 @click.option('--database', required=True, help='Database name')
 def save(connection_name, db_type, host, user, password, database):
     """
@@ -88,7 +95,7 @@ def save(connection_name, db_type, host, user, password, database):
     CONNECTION_NAME is the name to give to this saved connection.
 
     Example:
-    peepdb save mydb --db-type mysql --host localhost --user root --database myapp
+    peepdb save postgres1 --db-type postgres --host localhost --user postgres --password YourPassword --database peepdb_test
     """
     save_connection(connection_name, db_type, host, user, password, database)
     click.echo(f"Connection '{connection_name}' saved successfully.")
@@ -104,7 +111,13 @@ def list():
     Example:
     peepdb list
     """
-    list_connections()
+    connections = list_connections()
+    if not connections:
+        click.echo("No saved connections.")
+    else:
+        click.echo("Saved connections:")
+        for name in connections:
+            click.echo(f"- {name}")
 
 
 @cli.command()
@@ -143,7 +156,6 @@ def remove_all():
 
 def main():
     cli()
-
 
 if __name__ == '__main__':
     main()

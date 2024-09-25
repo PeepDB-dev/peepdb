@@ -12,18 +12,6 @@
 - **Formatted Output**: View data in a clean, formatted table or JSON format.
 - **Pagination**: Efficiently handle large datasets by viewing data in manageable chunks.
 
-## 🎬 peepDB in Action
-
-Here's a quick demonstration of peepDB:
-
-![peepDB Demo](images/demo.gif)
-
-## 🖼️ peepDB stills
-
-![peepDB example 2](images/peepdb_example2.png)
-
-> **Note:** The above image reflect the commands used in the official release (v0.1.3)
-
 ## 📦 Installation
 
 You can install peepDB directly from PyPI:
@@ -32,41 +20,36 @@ You can install peepDB directly from PyPI:
 pip install peepdb
 ```
 
-**Requirements:**
-- Python 3.6 or higher
-- pip (Python package installer)
-
-> **Note:** If peepdb gives an error like "The term 'peepdb' is not recognized as the name of a cmdlet" remember to add the Python Scripts folder to your PATH in Windows.
-
-## System Dependencies
-
-Before installing peepdb, ensure you have the following system dependencies:
-
-```bash
-sudo apt-get update
-sudo apt-get install libmariadb3 libmariadb-dev
-```
-
-Verify the installation by running:
-```bash
-peepdb --version
-```
-
 ## 🛠️ Usage
 
-peepDB uses a command-based structure for easier and more intuitive use. Here are the main commands:
+peepDB uses a command-based structure for easier and more intuitive use. Here are the main commands with examples:
 
 ### 1. Save Your Database Connection Details
 
 ```bash
 peepdb save <connection_name> --db-type [mysql/postgres/mariadb] --host <host> --user <user> --database <database>
 ```
-You'll be prompted securely for the password.
+
+**Important Note on Password Handling:**
+For security reasons, peepDB will prompt you for the password interactively rather than accepting it as a command-line argument. This prevents the password from being visible in your command history or to other users who might be able to see your screen.
+
+Example:
+```bash
+peepdb save myapp_db --db-type mysql --host localhost --user root --database myapp
+# You will be prompted to enter the password securely
+```
 
 ### 2. List Saved Connections
 
 ```bash
 peepdb list
+```
+
+Example output:
+```
+Saved connections:
+- myapp_db (mysql)
+- analytics_db (postgres)
 ```
 
 ### 3. View Tables
@@ -81,6 +64,23 @@ View a specific table:
 peepdb view <connection_name> --table <table_name>
 ```
 
+Example:
+```bash
+peepdb view myapp_db --table users
+```
+
+Output:
+```
+Table: users
++----+----------+----------------------+
+| id | username |        email         |
++====+==========+======================+
+|  1 | johndoe  | johndoe@example.com  |
+|  2 | janedoe  | janedoe@example.com  |
++----+----------+----------------------+
+Page 1 of 1 (Total rows: 2)
+```
+
 ### 4. Pagination
 
 Use pagination to handle large datasets:
@@ -88,11 +88,36 @@ Use pagination to handle large datasets:
 peepdb view <connection_name> --table <table_name> --page <page_number> --page-size <rows_per_page>
 ```
 
+Example:
+```bash
+peepdb view myapp_db --table users --page 2 --page-size 50
+```
+
 ### 5. Choose Output Format
 
 Get output in JSON format:
 ```bash
 peepdb view <connection_name> --format json
+```
+
+Example:
+```bash
+peepdb view myapp_db --table users --format json
+```
+
+Output:
+```json
+{
+  "users": {
+    "data": [
+      {"id": 1, "username": "johndoe", "email": "johndoe@example.com"},
+      {"id": 2, "username": "janedoe", "email": "janedoe@example.com"}
+    ],
+    "page": 1,
+    "total_pages": 1,
+    "total_rows": 2
+  }
+}
 ```
 
 ### 6. Remove Saved Connections
@@ -107,15 +132,6 @@ Remove all connections:
 peepdb remove-all
 ```
 
-For more detailed usage information on any command, use the `--help` option:
-```bash
-peepdb <command> --help
-```
-
-## 👨‍💻 For Developers
-
-Please refer to our [Contributing Guide](CONTRIBUTING.md) for information on setting up the development environment, running tests, and contributing to peepDB.
-
 ## 🔒 Security
 
 peepDB implements several security measures to protect your database connection details:
@@ -124,9 +140,9 @@ peepDB implements several security measures to protect your database connection 
 2. **Encryption**: Connection details are encrypted before being stored, using the cryptography library.
 3. **Secure Password Input**: Passwords are never shown in plain text and are input securely.
 
-However, please note that while we strive to implement best security practices, peepDB's security has not been verified by a third party. Users should exercise caution and follow general security best practices when using any tool that handles sensitive information.
+## 🤝 Contributing
 
-The encryption key is stored in your user directory (~/.peepdb/key.key). Keep this key safe and do not share it.
+Contributions to peepDB are welcome! Please refer to our [Contributing Guide](CONTRIBUTING.md) for more information.
 
 ## 📜 License
 
