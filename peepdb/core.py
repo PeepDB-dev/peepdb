@@ -1,105 +1,40 @@
-from peepdb.dbtypes import peepdb_mysql, peepdb_mariadb, peepdb_postgresql
-import mysql.connector
-import psycopg2
-import pymysql
-from decimal import Decimal
-from datetime import date, time, datetime
 from tabulate import tabulate
 import logging
-import math
+from typing import Dict, Any
+from .db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def connect_to_database(db_type, host, user, password, database, port=None, **kwargs):
-    logger.debug(f"Attempting to connect to {db_type} database '{database}' on host '{host}' with user '{user}'")
-    try:
-        if db_type == 'mysql':
-            conn = peepdb_mysql.connect_to_db(host=host, user=user, password=password, database=database,
-                                              port=port or 3306, **kwargs)
-        elif db_type == 'mariadb':
-            conn = peepdb_mariadb.connect_to_db(host=host, user=user, password=password, database=database,
-                                                port=port or 3306, **kwargs)
-        elif db_type == 'postgres':
-            conn = peepdb_postgresql.connect_to_db(host=host, user=user, password=password, database=database,
-                                                   port=port or 5432, **kwargs)
-        else:
-            raise ValueError("Unsupported database type")
-        logger.debug("Connection successful")
-        return conn
-    except (mysql.connector.Error, psycopg2.Error, pymysql.Error) as e:
-        logger.error(f"Failed to connect to {db_type} database: {str(e)}")
-        raise ConnectionError(f"Failed to connect to {db_type} database: {str(e)}")
-
-
-def fetch_tables(cursor, db_type):
-    tables = []
+def connect_to_database(db_type: str, host: str, user: str, password: str, database: str, **kwargs):
     if db_type == 'mysql':
-        tables = peepdb_mysql.fetch_tables(cursor)
-    elif db_type == 'mariadb':
-        tables = peepdb_mariadb.fetch_tables(cursor)
+        return MySQLDatabase(host, user, password, database, **kwargs)
     elif db_type == 'postgres':
-        tables = peepdb_postgresql.fetch_tables(cursor)
-    return [table[0] for table in tables]
-
-
-def view_table(cursor, table_name, page=1, page_size=100):
-    # Get total number of rows
-    cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
-    total_rows = cursor.fetchone()[0]
-
-    # Calculate total pages
-    total_pages = math.ceil(total_rows / page_size)
-
-    # Ensure page is within bounds
-    page = max(1, min(page, total_pages))
-
-    # Calculate offset
-    offset = (page - 1) * page_size
-
-    # Fetch data for the current page
-    cursor.execute(f"SELECT * FROM {table_name} LIMIT {page_size} OFFSET {offset}")
-    columns = [col[0] for col in cursor.description]
-    rows = []
-    for row in cursor.fetchall():
-        row_dict = {}
-        for i, value in enumerate(row):
-            if isinstance(value, Decimal):
-                value = float(value)
-            elif isinstance(value, (date, time, datetime)):
-                value = value.isoformat()
-            row_dict[columns[i]] = value
-        rows.append(row_dict)
-
-    return {
-        'data': rows,
-        'page': page,
-        'total_pages': total_pages,
-        'total_rows': total_rows
-    }
-
-
-def peep_db(db_type, host, user, password, database, table=None, format='table', page=1, page_size=100):
-    conn = connect_to_database(db_type, host, user, password, database)
-    cursor = conn.cursor()
-
-    if table:
-        result = {table: view_table(cursor, table, page, page_size)}
+        return PostgreSQLDatabase(host, user, password, database, **kwargs)
+    elif db_type == 'mariadb':
+        return MariaDBDatabase(host, user, password, database, **kwargs)
     else:
-        tables = fetch_tables(cursor, db_type)
-        result = {table: view_table(cursor, table, page, page_size) for table in tables}
+        raise ValueError("Unsupported database type")
 
-    cursor.close()
-    conn.close()
+def peep_db(db_type: str, host: str, user: str, password: str, database: str, table: str = None, format: str = 'table', page: int = 1, page_size: int = 100) -> Dict[str, Any]:
+    db = connect_to_database(db_type, host, user, password, database)
+    db.connect()
+    try:
+        if table:
+            result = {table: db.fetch_data(table, page, page_size)}
+        else:
+            tables = db.fetch_tables()
+            result = {table: db.fetch_data(table, page, page_size) for table in tables}
 
-    if format == 'table':
-        return format_as_table(result)
-    else:
-        return result
+        if format == 'table':
+            return format_as_table(result)
+        else:
+            return result
+    finally:
+        db.disconnect()
 
-
-def format_as_table(data):
+def format_as_table(data: Dict[str, Any]) -> str:
     formatted_result = []
     for table_name, table_data in data.items():
         formatted_result.append(f"Table: {table_name}")
