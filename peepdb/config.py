@@ -87,13 +87,19 @@ def save_connection(name, db_type, host, user, password, database):
         with open(CONFIG_FILE, "r") as f:
             config = json.load(f)
 
-    config[name] = {
-        "db_type": db_type,
-        "host": encrypt(host),
-        "user": encrypt(user),
-        "password": encrypt(password),
-        "database": encrypt(database)
-    }
+    if db_type == 'sqlite':
+        config[name] = {
+            "db_type": db_type,
+            "database": encrypt(database)
+        }
+    else:
+        config[name] = {
+            "db_type": db_type,
+            "host": encrypt(host),
+            "user": encrypt(user),
+            "password": encrypt(password) if password is not None else None,
+            "database": encrypt(database)
+        }
 
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f)

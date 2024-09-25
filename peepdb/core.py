@@ -1,4 +1,4 @@
-from peepdb.dbtypes import peepdb_mysql, peepdb_mariadb, peepdb_postgresql
+from peepdb.dbtypes import peepdb_mysql, peepdb_mariadb, peepdb_postgresql, peepdb_sqlite
 import mysql.connector
 import psycopg2
 import pymysql
@@ -7,12 +7,12 @@ from datetime import date, time, datetime
 from tabulate import tabulate
 import logging
 import math
-
+import json
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def connect_to_database(db_type, host, user, password, database, port=None, **kwargs):
+def connect_to_database(db_type, host=None, user=None, password=None, database=None, port=None, **kwargs):
     logger.debug(f"Attempting to connect to {db_type} database '{database}' on host '{host}' with user '{user}'")
     try:
         if db_type == 'mysql':
@@ -24,6 +24,8 @@ def connect_to_database(db_type, host, user, password, database, port=None, **kw
         elif db_type == 'postgres':
             conn = peepdb_postgresql.connect_to_db(host=host, user=user, password=password, database=database,
                                                    port=port or 5432, **kwargs)
+        elif db_type == 'sqlite':
+            conn = peepdb_sqlite.connect_to_db(database=database)
         else:
             raise ValueError("Unsupported database type")
         logger.debug("Connection successful")
@@ -41,6 +43,8 @@ def fetch_tables(cursor, db_type):
         tables = peepdb_mariadb.fetch_tables(cursor)
     elif db_type == 'postgres':
         tables = peepdb_postgresql.fetch_tables(cursor)
+    elif db_type == 'sqlite':
+        tables = peepdb_sqlite.fetch_tables(cursor)
     return [table[0] for table in tables]
 
 
@@ -80,7 +84,7 @@ def view_table(cursor, table_name, page=1, page_size=100):
     }
 
 
-def peep_db(db_type, host, user, password, database, table=None, format='table', page=1, page_size=100):
+def peep_db(db_type, host=None, user=None, password=None, database=None, table=None, format='table', page=1, page_size=100):
     conn = connect_to_database(db_type, host, user, password, database)
     cursor = conn.cursor()
 
@@ -96,7 +100,7 @@ def peep_db(db_type, host, user, password, database, table=None, format='table',
     if format == 'table':
         return format_as_table(result)
     else:
-        return result
+        return json.dumps(result, default=str)  # Convert to JSON string
 
 
 def format_as_table(data):

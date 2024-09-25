@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock, patch
 from peepdb.core import peep_db, connect_to_database, fetch_tables, view_table
 from peepdb.config import save_connection, get_connection, list_connections, remove_connection, remove_all_connections
-
+import json
 
 # Mock database connection
 @pytest.fixture
@@ -86,12 +86,18 @@ def test_peep_db(mock_view_table, mock_fetch_tables, mock_connect):
 
     # Test without specifying a table
     result = peep_db('mysql', 'host', 'user', 'password', 'database', format='json')
-    assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1},
-                      'table2': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}}
+    result_dict = json.loads(result)
+    assert result_dict == {
+        'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1},
+        'table2': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}
+    }
 
     # Test with a specific table
     result = peep_db('mysql', 'host', 'user', 'password', 'database', table='table1', format='json')
-    assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}}
+    result_dict = json.loads(result)
+    assert result_dict == {
+        'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}
+    }
 
     # Verify that view_table was called with the correct arguments
     mock_view_table.assert_called_with(mock_connect.return_value.cursor.return_value, 'table1', 1, 100)
