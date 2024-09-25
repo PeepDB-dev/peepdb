@@ -27,17 +27,18 @@ peepDB uses a command-based structure for easier and more intuitive use. Here ar
 ### 1. Save Your Database Connection Details
 
 ```bash
-peepdb save <connection_name> --db-type [mysql/postgres/mariadb] --host <host> --user <user> --database <database>
+peepdb save <connection_name> --db-type [mysql/postgres/mariadb] --host <host> --user <user> --password <password> --database <database>
 ```
 
 **Important Note on Password Handling:**
-For security reasons, peepDB will prompt you for the password interactively rather than accepting it as a command-line argument. This prevents the password from being visible in your command history or to other users who might be able to see your screen.
+The password is required as a command-line argument. While this is convenient for scripting, it's important to note that this method can be insecure as the password may be visible in your command history or to other users who can view your screen or process list.
 
 Example:
 ```bash
-peepdb save myapp_db --db-type mysql --host localhost --user root --database myapp
-# You will be prompted to enter the password securely
+peepdb save myapp_db --db-type mysql --host localhost --user root --password my_secure_password --database myapp
 ```
+
+For improved security, consider using environment variables or a configuration file to store sensitive information like passwords.
 
 ### 2. List Saved Connections
 
@@ -138,7 +139,7 @@ peepDB implements several security measures to protect your database connection 
 
 1. **Local Storage**: All connection details are stored locally on your machine, not on any remote servers.
 2. **Encryption**: Connection details are encrypted before being stored, using the cryptography library.
-3. **Secure Password Input**: Passwords are never shown in plain text and are input securely.
+3. **Caution with Passwords**: While passwords are accepted as command-line arguments for convenience, users should be cautious about using this method in shared environments or situations where command history might be accessible to others.
 
 ## 🤝 Contributing
 
