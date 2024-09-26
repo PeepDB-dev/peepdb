@@ -25,7 +25,7 @@ def cli():
     It supports MySQL, PostgreSQL, and MariaDB.
 
     Usage examples:
-    
+
     1. Save a new database connection:
        peepdb save postgres1 --db-type postgres --host localhost --user postgres --password YourPassword --database peepdb_test
 
@@ -83,7 +83,7 @@ def view(connection_name, table, format, page, page_size):
 
 @cli.command()
 @click.argument('connection_name')
-@click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb']), required=True, help='Database type')
+@click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb', 'mongodb']), required=True, help='Database type')
 @click.option('--host', required=True, help='Database host')
 @click.option('--user', required=True, help='Database user')
 @click.option('--password', required=True, help='Database password')

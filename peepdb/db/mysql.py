@@ -34,10 +34,10 @@ class MySQLDatabase(BaseDatabase):
         offset = (page - 1) * page_size
         self.cursor.execute(f"SELECT COUNT(*) as total FROM {table}")
         total_rows = self.cursor.fetchone()['total']
-        
+
         self.cursor.execute(f"SELECT * FROM {table} LIMIT {page_size} OFFSET {offset}")
         rows = self.cursor.fetchall()
-        
+
         return {
             'data': rows,
             'page': page,

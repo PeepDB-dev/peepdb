@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock, patch
 from peepdb.core import peep_db
 from peepdb.config import save_connection, get_connection, list_connections, remove_connection, remove_all_connections
-from peepdb.db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase
+from peepdb.db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoDBDatabase
 
 @pytest.fixture
 def mock_db():
@@ -16,13 +16,15 @@ def mock_db():
     }
     return db
 
+@patch('peepdb.core.MongoDBDatabase')
 @patch('peepdb.core.MySQLDatabase')
 @patch('peepdb.core.PostgreSQLDatabase')
 @patch('peepdb.core.MariaDBDatabase')
-def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_db):
+def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_db):
     mock_mysql.return_value = mock_db
     mock_postgresql.return_value = mock_db
     mock_mariadb.return_value = mock_db
+    mock_mongodb.return_value = mock_db
 
     # Test MySQL
     result = peep_db('mysql', 'host', 'user', 'password', 'database', format='json')
@@ -39,6 +41,13 @@ def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_db):
 
     # Test MariaDB
     result = peep_db('mariadb', 'host', 'user', 'password', 'database', format='json')
+    assert result == {
+        'table1': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2},
+        'table2': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2}
+    }
+
+    # Test MongoDB
+    result = peep_db('mongodb', 'host', 'user', 'password', 'database', format='json')
     assert result == {
         'table1': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2},
         'table2': {'data': [{'id': 1, 'name': 'John'}, {'id': 2, 'name': 'Jane'}], 'page': 1, 'total_pages': 1, 'total_rows': 2}
