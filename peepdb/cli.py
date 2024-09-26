@@ -111,13 +111,7 @@ def list():
     Example:
     peepdb list
     """
-    connections = list_connections()
-    if not connections:
-        click.echo("No saved connections.")
-    else:
-        click.echo("Saved connections:")
-        for name in connections:
-            click.echo(f"- {name}")
+    list_connections()
 
 
 @cli.command()
