@@ -108,4 +108,9 @@ Here are some example commands to help you get started:
    peepdb remove myapp_db
    ```
 
+## Database Security Practices
+Because database passwords are passed in the command line, it is advised to run on local machines, not shared environments
+1. Use environmental variables: Store credentials in environment variables to avoid exposing them in command history
+3. Access Control: Limit database variables to only what is necesssary, do not run in shared environments
+
 Remember to use the `--help` option with any command for more detailed information on its usage and options.
