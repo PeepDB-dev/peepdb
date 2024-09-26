@@ -25,7 +25,7 @@ def cli():
     It supports MySQL, PostgreSQL, and MariaDB.
 
     Usage examples:
-    
+
     1. Save a new database connection:
        peepdb save postgres1 --db-type postgres --host localhost --user postgres --password YourPassword --database peepdb_test
 
@@ -111,13 +111,7 @@ def list():
     Example:
     peepdb list
     """
-    connections = list_connections()
-    if not connections:
-        click.echo("No saved connections.")
-    else:
-        click.echo("Saved connections:")
-        for name in connections:
-            click.echo(f"- {name}")
+    list_connections()
 
 
 @cli.command()
