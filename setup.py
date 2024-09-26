@@ -23,6 +23,8 @@ setup(
         "mariadb",
         "cachetools>=5.5.0",
         "keyring>=25.4.1",
+        "pymongo==4.9.1",
+        "dnspython==2.6.1"
     ],
     extras_require={
         'dev': [

@@ -1,10 +1,16 @@
 from tabulate import tabulate
 import logging
 from typing import Dict, Any
-from .db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase
+from .db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoDBDatabase
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# Create a console handler for application logger
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+logger.addHandler(console_handler)
 
 
 def connect_to_database(db_type: str, host: str, user: str, password: str, database: str, **kwargs):
@@ -14,6 +20,8 @@ def connect_to_database(db_type: str, host: str, user: str, password: str, datab
         return PostgreSQLDatabase(host, user, password, database, **kwargs)
     elif db_type == 'mariadb':
         return MariaDBDatabase(host, user, password, database, **kwargs)
+    elif db_type == 'mongodb':
+        return MongoDBDatabase(host, user, password, database, **kwargs)
     else:
         raise ValueError("Unsupported database type")
 
