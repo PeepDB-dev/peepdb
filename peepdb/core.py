@@ -44,7 +44,7 @@ def fetch_tables(cursor, db_type):
     return [table[0] for table in tables]
 
 
-def view_table(cursor, table_name, page=1, page_size=100):
+def view_table(cursor, table_name, page=1, page_size=100, scientific=False):
     # Get total number of rows
     cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
     total_rows = cursor.fetchone()[0]
@@ -65,10 +65,26 @@ def view_table(cursor, table_name, page=1, page_size=100):
     for row in cursor.fetchall():
         row_dict = {}
         for i, value in enumerate(row):
-            if isinstance(value, Decimal):
-                value = float(value)
-            elif isinstance(value, (date, time, datetime)):
+            if isinstance(value, (date, time, datetime)):
                 value = value.isoformat()
+            elif isinstance(value, Decimal):
+                value = float(value)  # Convert Decimal to float
+            elif isinstance(value, bool):
+                # Keep boolean as True/False
+                value = value
+            elif isinstance(value, int) or isinstance(value, float):
+                if columns[i].lower() == 'id':
+                    # Ensure 'id' remains a simple integer or float
+                    value = float(value)
+                elif scientific:
+                    # Use scientific notation if enabled
+                    value = "{:.6e}".format(value)
+                else:
+                    # Use fixed-point notation for large numbers, preserving commas
+                    if isinstance(value, float):
+                        value = "{:,.6f}".format(value).rstrip('0').rstrip('.')
+                    else:
+                        value = "{:,}".format(value)
             row_dict[columns[i]] = value
         rows.append(row_dict)
 
@@ -80,15 +96,16 @@ def view_table(cursor, table_name, page=1, page_size=100):
     }
 
 
-def peep_db(db_type, host, user, password, database, table=None, format='table', page=1, page_size=100):
+
+def peep_db(db_type, host, user, password, database, table=None, format='table', page=1, page_size=100, scientific=False):
     conn = connect_to_database(db_type, host, user, password, database)
     cursor = conn.cursor()
 
     if table:
-        result = {table: view_table(cursor, table, page, page_size)}
+        result = {table: view_table(cursor, table, page, page_size, scientific=scientific)}
     else:
         tables = fetch_tables(cursor, db_type)
-        result = {table: view_table(cursor, table, page, page_size) for table in tables}
+        result = {table: view_table(cursor, table, page, page_size, scientific=scientific) for table in tables}
 
     cursor.close()
     conn.close()

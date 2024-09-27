@@ -24,8 +24,10 @@ def test_view_command_with_pagination(mock_get_connection, mock_peep_db, runner)
     assert "Previous Page: peepdb view testconn --table users --page 1 --page-size 50" in result.output
 
     mock_get_connection.assert_called_once_with('testconn')
-    mock_peep_db.assert_called_once_with('mysql', 'localhost', 'user', 'password', 'testdb', 'users', format='table',
-                                         page=2, page_size=50)
+    mock_peep_db.assert_called_once_with(
+        'mysql', 'localhost', 'user', 'password', 'testdb', 'users',
+        format='table', page=2, page_size=50, scientific=False
+    )
 
 
 @patch('peepdb.cli.peep_db')
@@ -81,8 +83,10 @@ def test_view_command_default_values(mock_get_connection, mock_peep_db, runner):
 
     assert result.exit_code == 0
     assert "Mocked default data" in result.output
-    mock_peep_db.assert_called_once_with('mysql', 'localhost', 'user', 'password', 'testdb', None, format='table',
-                                         page=1, page_size=100)
+    mock_peep_db.assert_called_once_with(
+        'mysql', 'localhost', 'user', 'password', 'testdb', None,
+        format='table', page=1, page_size=100, scientific=False
+    )
 
 
 if __name__ == '__main__':

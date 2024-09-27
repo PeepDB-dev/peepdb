@@ -67,7 +67,7 @@ def test_view_table(mock_cursor):
     mock_cursor.fetchall.return_value = [(1, 'value1'), (2, 'value2')]
     result = view_table(mock_cursor, 'test_table')
     assert result == {
-        'data': [{'id': 1, 'name': 'value1'}, {'id': 2, 'name': 'value2'}],
+        'data': [{'id': 1, 'name': 'value1'}, {'id': 2, 'name': 'value2'}],  # Expect integers
         'page': 1,
         'total_pages': 1,
         'total_rows': 2
@@ -94,7 +94,7 @@ def test_peep_db(mock_view_table, mock_fetch_tables, mock_connect):
     assert result == {'table1': {'data': ['row1'], 'page': 1, 'total_pages': 1, 'total_rows': 1}}
 
     # Verify that view_table was called with the correct arguments
-    mock_view_table.assert_called_with(mock_connect.return_value.cursor.return_value, 'table1', 1, 100)
+    mock_view_table.assert_called_with(mock_connect.return_value.cursor.return_value, 'table1', 1, 100, scientific=False)
 
 
 # Test configuration functions
@@ -142,6 +142,3 @@ def test_config_functions(mock_decrypt, mock_encrypt, mock_json_dump, mock_json_
     assert remove_all_connections() == 2
     # Assert that os.remove was called with the correct arguments
 
-
-if __name__ == '__main__':
-    pytest.main()
