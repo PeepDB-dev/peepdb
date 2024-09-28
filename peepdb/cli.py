@@ -22,7 +22,7 @@ def cli():
     peepDB: A quick database table viewer.
 
     This tool allows you to quickly inspect database tables without writing SQL queries.
-    It supports MySQL, PostgreSQL, and MariaDB.
+    It supports MySQL, PostgreSQL, MariaDB, MongoDB and SQLite.
 
     Usage examples:
 
@@ -83,10 +83,10 @@ def view(connection_name, table, format, page, page_size):
 
 @cli.command()
 @click.argument('connection_name')
-@click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb', 'mongodb']), required=True, help='Database type')
-@click.option('--host', required=True, help='Database host')
-@click.option('--user', required=True, help='Database user')
-@click.option('--password', required=True, help='Database password')
+@click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb', 'mongodb', 'sqlite']), required=True, help='Database type')
+@click.option('--host', required=True, help='Database host (or file path for SQLite)')
+@click.option('--user', required=False, help='Database user (not required for SQLite)')
+@click.option('--password', required=False, help='Database password (not required for SQLite)')
 @click.option('--database', required=True, help='Database name')
 def save(connection_name, db_type, host, user, password, database):
     """
@@ -97,6 +97,8 @@ def save(connection_name, db_type, host, user, password, database):
     Example:
     peepdb save postgres1 --db-type postgres --host localhost --user postgres --password YourPassword --database peepdb_test
     """
+    if db_type == 'sqlite':
+        user = password = ''  # SQLite doesn't use username and password
     save_connection(connection_name, db_type, host, user, password, database)
     click.echo(f"Connection '{connection_name}' saved successfully.")
 

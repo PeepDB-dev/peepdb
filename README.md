@@ -1,10 +1,10 @@
 # peepDB
 
-**peepDB** is an open-source command-line tool and Python library designed for developers and database administrators who need a fast and efficient way to inspect their database tables without writing SQL queries. With support for MySQL, PostgreSQL, MariaDB, and MongoDB. peepDB is lightweight, secure, and incredibly easy to use.
+**peepDB** is an open-source command-line tool and Python library designed for developers and database administrators who need a fast and efficient way to inspect their database tables without writing SQL queries. With support for MySQL, PostgreSQL, MariaDB, MongoDB and SQLite. peepDB is lightweight, secure, and incredibly easy to use.
 
 ## 🚀 Features
 
-- **Multi-Database Support**: Works with MySQL, PostgreSQL, MariaDB, and MongoDB.
+- **Multi-Database Support**: Works with MySQL, PostgreSQL, MariaDB, MongoDB and SQLite.
 - **Quick Data Inspection**: View all tables or a specific table with a simple command.
 - **User-Friendly CLI**: Easy-to-use command-line interface powered by Click.
 - **Secure Local Storage**: Securely store database connection details with encryption on your local machine.
@@ -38,8 +38,14 @@ peepDB uses a command-based structure for easier and more intuitive use. Here ar
 
 ### 1. Save Your Database Connection Details
 
+For SQLite:
 ```bash
-peepdb save <connection_name> --db-type [mysql/postgres/mariadb] --host <host> --user <user> --password <password> --database <database>
+peepdb save mydb --db-type sqlite --host /path/to/mydb.sqlite --database mydb
+```
+
+For other databases:
+```bash
+peepdb save <connection_name> --db-type [mysql/postgres/mariadb/mongodb] --host <host> --user <user> --password <password> --database <database>
 ```
 
 **Important Note on Password Handling:**

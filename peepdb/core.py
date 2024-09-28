@@ -1,7 +1,7 @@
 from tabulate import tabulate
 import logging
 from typing import Dict, Any
-from .db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoDBDatabase
+from .db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoDBDatabase, SQLiteDatabase
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -22,17 +22,23 @@ def connect_to_database(db_type: str, host: str, user: str, password: str, datab
         return MariaDBDatabase(host, user, password, database, **kwargs)
     elif db_type == 'mongodb':
         return MongoDBDatabase(host, user, password, database, **kwargs)
+    elif db_type == 'sqlite':
+        return SQLiteDatabase(host, user, password, database, **kwargs)
     else:
         raise ValueError("Unsupported database type")
 
 def peep_db(db_type: str, host: str, user: str, password: str, database: str, table: str = None, format: str = 'table', page: int = 1, page_size: int = 100) -> Dict[str, Any]:
+    print(f"peep_db called with: db_type={db_type}, host={host}, database={database}, table={table}")
     db = connect_to_database(db_type, host, user, password, database)
     db.connect()
     try:
         if table:
+            print(f"Fetching data for table: {table}")
             result = {table: db.fetch_data(table, page, page_size)}
         else:
+            print("Fetching all tables")
             tables = db.fetch_tables()
+            print(f"Tables fetched: {tables}")
             result = {table: db.fetch_data(table, page, page_size) for table in tables}
 
         if format == 'table':
@@ -41,6 +47,7 @@ def peep_db(db_type: str, host: str, user: str, password: str, database: str, ta
             return result
     finally:
         db.disconnect()
+
 
 def format_as_table(data: Dict[str, Any]) -> str:
     formatted_result = []

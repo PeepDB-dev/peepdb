@@ -87,13 +87,21 @@ def save_connection(name, db_type, host, user, password, database):
         with open(CONFIG_FILE, "r") as f:
             config = json.load(f)
 
-    config[name] = {
-        "db_type": db_type,
-        "host": encrypt(host),
-        "user": encrypt(user),
-        "password": encrypt(password),
-        "database": encrypt(database)
-    }
+    # For SQLite, we don't need to encrypt the host (file path)
+    if db_type == 'sqlite':
+        config[name] = {
+            "db_type": db_type,
+            "host": host,
+            "database": database
+        }
+    else:
+        config[name] = {
+            "db_type": db_type,
+            "host": encrypt(host),
+            "user": encrypt(user),
+            "password": encrypt(password),
+            "database": encrypt(database)
+        }
 
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f)
@@ -111,13 +119,22 @@ def get_connection(name):
 
     conn = config[name]
     try:
-        return (
-            conn["db_type"],
-            decrypt(conn["host"]),
-            decrypt(conn["user"]),
-            decrypt(conn["password"]),
-            decrypt(conn["database"])
-        )
+        if conn["db_type"] == 'sqlite':
+            return (
+                conn["db_type"],
+                conn["host"],  # No need to decrypt for SQLite
+                "",  # Empty string for user
+                "",  # Empty string for password
+                conn["database"]
+            )
+        else:
+            return (
+                conn["db_type"],
+                decrypt(conn["host"]),
+                decrypt(conn["user"]),
+                decrypt(conn["password"]),
+                decrypt(conn["database"])
+            )
     except InvalidToken:
         raise InvalidPassword("Password is invalid !!!")
 
