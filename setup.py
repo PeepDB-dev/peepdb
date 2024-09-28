@@ -5,13 +5,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="peepdb",
-    version="0.1.3",
+    version="0.1.4",
     author="Evangelos Meklis",
     author_email="vmeklis@hotmail.com",
-    description="A quick database table viewer",
+    description="CLI tool to view database tables fast",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/evangelosmeklis/peepdb",
+    url="https://github.com/PeepDB-dev/peepdb",
     packages=find_packages(),
     install_requires=[
         "mysql-connector-python>=9.0.0",
