@@ -2,6 +2,7 @@ import base64
 import json
 import os
 from dataclasses import dataclass
+import logging
 
 import click
 import keyring
@@ -23,7 +24,8 @@ SECURITY_CONFIG_FILE = os.path.join(CONFIG_DIR, "security_config.json")
 KEYRING_USERNAME = "PEEP_DB_KEY"
 KEYRING_SERVICE_NAME = "PEEP_DB"
 
-
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 @cached(cache=TTLCache(maxsize=1024, ttl=600))
 def generate_key_from_password(salt):
     password = click.prompt("Please entry the password to encrpyt/decrpty DB passwords",
@@ -79,6 +81,8 @@ def decrypt(token: str) -> str:
 
 
 def save_connection(name, db_type, host, user, password, database):
+    logger.debug(f"Saving connection: {name}, {db_type}, {host}, {user}, {'*' * len(password) if password else 'None'}, {database}")
+    
     if not os.path.exists(CONFIG_DIR):
         os.makedirs(CONFIG_DIR)
 
@@ -87,11 +91,10 @@ def save_connection(name, db_type, host, user, password, database):
         with open(CONFIG_FILE, "r") as f:
             config = json.load(f)
 
-    # For SQLite, we don't need to encrypt the host (file path)
     if db_type == 'sqlite':
         config[name] = {
             "db_type": db_type,
-            "host": host,
+            "host": host,  # Store the file path directly for SQLite
             "database": database
         }
     else:
@@ -105,6 +108,8 @@ def save_connection(name, db_type, host, user, password, database):
 
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f)
+    
+    logger.debug("Connection saved successfully")
 
 
 def get_connection(name):
