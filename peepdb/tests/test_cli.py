@@ -62,6 +62,29 @@ def test_view_command_with_json_format(mock_mysql_db, mock_get_connection, runne
     assert '"total_rows": 2' in result.output
 
 @patch('peepdb.cli.get_connection')
+@patch('peepdb.core.MySQLDatabase')
+def test_view_command_with_scientific(mock_mysql_db, mock_get_connection, runner, mock_db):
+    mock_get_connection.return_value = ('mysql', 'localhost', 'user', 'password', 'testdb')
+    mock_mysql_db.return_value = mock_db
+
+    # Modify the mock data to include a large number to test scientific notation
+    mock_db.fetch_data.return_value = {
+        'data': [{'id': 1, 'salary': 1234567890}, {'id': 2, 'salary': 9876543210}],
+        'page': 1,
+        'total_pages': 1,
+        'total_rows': 2
+    }
+
+    result = runner.invoke(cli, ['view', 'testconn', '--table', 'users', '--scientific'])
+
+    assert result.exit_code == 0
+    assert "Table: users" in result.output
+    assert any(scientific in result.output for scientific in ["1.234568e+09", "1.23457e+09"])  # Ensure salary is displayed in scientific notation
+    assert any(scientific in result.output for scientific in ["9.876543e+09", "9.87654e+09"])
+
+    mock_get_connection.assert_called_once_with('testconn')
+
+@patch('peepdb.cli.get_connection')
 def test_view_command_invalid_connection(mock_get_connection, runner):
     mock_get_connection.return_value = None
 
