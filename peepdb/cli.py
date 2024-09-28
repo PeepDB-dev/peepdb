@@ -49,7 +49,8 @@ def cli():
 @click.option('--format', type=click.Choice(['table', 'json']), default='table', help='Output format')
 @click.option('--page', type=int, default=1, help='Page number for pagination')
 @click.option('--page-size', type=int, default=100, help='Number of rows per page')
-def view(connection_name, table, format, page, page_size):
+@click.option('--scientific', is_flag=True, help='Display numbers in scientific notation')
+def view(connection_name, table, format, page, page_size, scientific):
     """
     View database tables.
 
@@ -66,7 +67,7 @@ def view(connection_name, table, format, page, page_size):
         return
 
     db_type, host, user, password, database = connection
-    result = peep_db(db_type, host, user, password, database, table, format=format, page=page, page_size=page_size)
+    result = peep_db(db_type, host, user, password, database, table, format=format, page=page, page_size=page_size, scientific=scientific)
 
     if format == 'table':
         click.echo(result)
@@ -158,6 +159,7 @@ def remove_all():
 
 def main():
     cli()
+
 
 if __name__ == '__main__':
     main()
