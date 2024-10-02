@@ -91,10 +91,11 @@ def save_connection(name, db_type, host, user, password, database):
         with open(CONFIG_FILE, "r") as f:
             config = json.load(f)
 
-    if db_type == 'sqlite':
+    if db_type in ['sqlite', 'firebase']:
+        # For SQLite and Firebase, store necessary parameters directly
         config[name] = {
             "db_type": db_type,
-            "host": host,  # Store the file path directly for SQLite
+            "host": host,
             "database": database
         }
     else:
@@ -124,13 +125,13 @@ def get_connection(name):
 
     conn = config[name]
     try:
-        if conn["db_type"] == 'sqlite':
+        if conn["db_type"] in ['sqlite', 'firebase']:
             return (
                 conn["db_type"],
-                conn["host"],  # No need to decrypt for SQLite
+                conn["host"],  # For SQLite and Firebase, host is used directly
                 "",  # Empty string for user
                 "",  # Empty string for password
-                conn["database"]
+                conn.get("database", "")
             )
         else:
             return (
