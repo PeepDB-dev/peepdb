@@ -1,5 +1,3 @@
-# tests/test_peepdb.py
-
 import pytest
 from unittest.mock import Mock, patch
 from decimal import Decimal
@@ -33,7 +31,7 @@ def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_f
     mock_mongodb.return_value = mock_db
     mock_firebase_db.return_value = mock_db
 
-    # Expected result
+    # Expected result for non-scientific format
     expected_result = {
         'table1': {
             'data': [
@@ -54,6 +52,7 @@ def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_f
             'total_rows': 2
         }
     }
+
     # Test MySQL without scientific notation
     result = peep_db('mysql', 'host', 'user', 'password', 'database', format='json', scientific=False)
     assert result == expected_result
@@ -87,11 +86,22 @@ def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_f
 
     # Test MySQL with scientific notation
     result = peep_db('mysql', 'host', 'user', 'password', 'database', format='json', scientific=True)
-    # Since scientific notation does not affect JSON output, the result should be the same
-    assert result == expected_result
+    assert result == expected_result  # JSON output unaffected by scientific flag
 
     # Test Firebase with scientific notation
     result = peep_db('firebase', 'path/to/serviceAccountKey.json', '', '', '', format='json', scientific=True)
+    assert result == expected_result  # JSON output unaffected by scientific flag
+
+    # Test PostgreSQL with scientific notation
+    result = peep_db('postgres', 'host', 'user', 'password', 'database', table='table1', format='json', scientific=True)
+    assert result == expected_result_postgres
+
+    # Test MariaDB with scientific notation
+    result = peep_db('mariadb', 'host', 'user', 'password', 'database', format='json', scientific=True)
+    assert result == expected_result
+
+    # Test MongoDB with scientific notation
+    result = peep_db('mongodb', 'host', 'user', 'password', 'database', format='json', scientific=True)
     assert result == expected_result
 
     # Test fetching a specific table/collection for Firebase
@@ -107,6 +117,7 @@ def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_f
     # Test unsupported database type
     with pytest.raises(ValueError):
         peep_db('unsupported', 'host', 'user', 'password', 'database')
+
 
 # Test configuration functions
 @patch('peepdb.config.os.path.exists')
@@ -153,6 +164,7 @@ def test_config_functions(mock_decrypt, mock_encrypt, mock_json_dump, mock_json_
     mock_json_load.return_value = {'test_conn': {}, 'other_conn': {}}
     assert remove_all_connections() == 2
     # Assert that os.remove was called with the correct arguments
+
 
 if __name__ == '__main__':
     pytest.main()
