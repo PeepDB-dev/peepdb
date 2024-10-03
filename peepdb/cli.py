@@ -84,7 +84,7 @@ def view(connection_name, table, format, page, page_size, scientific):
 
 @cli.command()
 @click.argument('connection_name')
-@click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb', 'mongodb', 'firebase']), required=True, help='Database type')
+@click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb', 'sqlite', 'mongodb', 'firebase']), required=True, help='Database type')
 @click.option('--host', required=True, help='Database host or file path for SQLite')
 @click.option('--user', required=False, help='Database user (not required for SQLite)')
 @click.option('--password', required=False, help='Database password (not required for SQLite)')
