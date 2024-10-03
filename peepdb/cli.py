@@ -22,7 +22,7 @@ def cli():
     peepDB: A quick database table viewer.
 
     This tool allows you to quickly inspect database tables without writing SQL queries.
-    It supports MySQL, PostgreSQL, MariaDB, MongoDB and SQLite.
+    It supports MySQL, PostgreSQL, MariaDB, SQLite, MongoDB and FireBase.
 
     Usage examples:
 
@@ -84,11 +84,11 @@ def view(connection_name, table, format, page, page_size, scientific):
 
 @cli.command()
 @click.argument('connection_name')
-@click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb', 'mongodb', 'sqlite']), required=True, help='Database type')
+@click.option('--db-type', type=click.Choice(['mysql', 'postgres', 'mariadb', 'sqlite', 'mongodb', 'firebase']), required=True, help='Database type')
 @click.option('--host', required=True, help='Database host or file path for SQLite')
 @click.option('--user', required=False, help='Database user (not required for SQLite)')
 @click.option('--password', required=False, help='Database password (not required for SQLite)')
-@click.option('--database', required=True, help='Database name')
+@click.option('--database', required=False, help='Database name (not required for SQLite/Firebase)')
 def save(connection_name, db_type, host, user, password, database):
     """
     Save a new database connection.
@@ -98,14 +98,15 @@ def save(connection_name, db_type, host, user, password, database):
     Example:
     peepdb save postgres1 --db-type postgres --host localhost --user postgres --password YourPassword --database peepdb_test
     """
-    if db_type == 'sqlite':
-        user = password = ''  # SQLite doesn't use username and password
+    if db_type in ['sqlite', 'firebase']:
+        user = password = database = ''  # Not used for SQLite and Firebase
     else:
         if not user:
             user = click.prompt('Enter username')
         if not password:
             password = click.prompt('Enter password', hide_input=True, confirmation_prompt=True)
-
+        if not database:
+            database = click.prompt('Enter database name')
     save_connection(connection_name, db_type, host, user, password, database)
     click.echo(f"Connection '{connection_name}' saved successfully.")
 

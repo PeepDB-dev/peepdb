@@ -3,7 +3,7 @@ import logging
 from typing import Dict, Any
 from datetime import date, time, datetime
 from decimal import Decimal
-from .db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoDBDatabase, SQLiteDatabase
+from .db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoDBDatabase, SQLiteDatabase, FirebaseDatabase
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -26,6 +26,9 @@ def connect_to_database(db_type: str, host: str, user: str, password: str, datab
         return MongoDBDatabase(host, user, password, database, **kwargs)
     elif db_type == 'sqlite':
         return SQLiteDatabase(host, user, password, database, **kwargs)
+    elif db_type == 'firebase':
+        # For Firebase, 'host' will be the path to the service account key
+        return FirebaseDatabase(host, **kwargs)
     else:
         raise ValueError("Unsupported database type")
 
