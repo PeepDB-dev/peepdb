@@ -1,8 +1,3 @@
----
-title: Usage
-layout: default
----
-
 # 🛠️ Usage
 
 peepDB provides a user-friendly command-line interface for interacting with your databases. Here are the main commands and their usage:
@@ -107,5 +102,21 @@ Here are some example commands to help you get started:
    ```bash
    peepdb remove myapp_db
    ```
+## Practical Examples
+### Example 1: Viewing Table Data
+```bash
+peepdb view myapp_db --table orders --page 1 --page-size 10
+```
+This displays all data from the 'orders' table on the first page with page size 10. This is important to consider when querying large databases
+### Example 2: View Employee Data
+```bash
+peepdb view myapp_db --table employees --page 1
+```
+This displays all data from the employees table from the myapp_db database on page 1
+
+## Database Security Practices
+Because database passwords are passed in the command line, it is advised to run on local machines, not shared environments
+1. Use environmental variables: Store credentials in environment variables to avoid exposing them in command history
+3. Access Control: Limit database variables to only what is necesssary, do not run in shared environments
 
 Remember to use the `--help` option with any command for more detailed information on its usage and options.

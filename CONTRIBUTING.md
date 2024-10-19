@@ -37,6 +37,8 @@ By participating in this project, you are expected to uphold our Code of Conduct
    ```
    pip install -e .[dev]
    ```
+4. Database Setup: Set up a test database (MySQL, PostgreSQL, etc.) locally or use Docker
+
 
 ## Running Tests
 

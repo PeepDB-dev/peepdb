@@ -159,6 +159,11 @@ peepDB implements several security measures to protect your database connection 
 2. **Encryption**: Connection details are encrypted before being stored, using the cryptography library.
 3. **Caution with Passwords**: While passwords are accepted as command-line arguments for convenience, users should be cautious about using this method in shared environments or situations where command history might be accessible to others.
 
+## ✔️ Troubleshooting
+1. **Database Connection Error** If you are having trouble connecting to the database, make sure to verify your database credentials and ensure the server is reachable
+2. **Query Timeout** Try to optimize the query, adjust the view command and use pagination to handle large datasets
+
+
 ## 🤝 Contributing
 
 Contributions to peepDB are welcome! Please refer to our [Contributing Guide](CONTRIBUTING.md) for more information.
