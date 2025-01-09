@@ -13,10 +13,9 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from .exceptions import InvalidPassword
 
 @dataclass
-class KeySecurity():
+class KeySecurity:
     KEYRING = "os-keyring"
     PASSWORD = "password"
-
 
 CONFIG_DIR = os.path.expanduser("~/.peepdb")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
@@ -26,10 +25,10 @@ KEYRING_SERVICE_NAME = "PEEP_DB"
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
 @cached(cache=TTLCache(maxsize=1024, ttl=600))
 def generate_key_from_password(salt):
-    password = click.prompt("Please entry the password to encrpyt/decrpty DB passwords",
-                            type=str).encode('utf-8')
+    password = click.prompt("Please enter the password to encrypt/decrypt DB passwords", type=str).encode('utf-8')
     salt = base64.b64decode(salt)
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -39,7 +38,6 @@ def generate_key_from_password(salt):
     )
     return base64.urlsafe_b64encode(kdf.derive(password)).decode("utf-8")
 
-
 @cached(cache=TTLCache(maxsize=1024, ttl=600))
 def fetch_key_from_keyring():
     key = keyring.get_password(KEYRING_SERVICE_NAME, KEYRING_USERNAME)
@@ -47,7 +45,6 @@ def fetch_key_from_keyring():
         key = Fernet.generate_key().decode("utf-8")
         keyring.set_password(KEYRING_SERVICE_NAME, KEYRING_USERNAME, key)
     return key
-
 
 def get_key_security_config():
     security_config = {}
@@ -60,29 +57,27 @@ def get_key_security_config():
 
     return security_config['PEEP_DB_KEY_SECURITY']
 
-
 def get_key():
     key_security_config = get_key_security_config()
     if key_security_config['type'] == KeySecurity.KEYRING:
         # Fetching encryption key from keyring
         key = fetch_key_from_keyring()
     else:
-        # Dynamically generating encryption key from users input
+        # Dynamically generating encryption key from user's input
         key = generate_key_from_password(key_security_config['salt'])
     return key
-
 
 def encrypt(message: str) -> str:
     return Fernet(get_key()).encrypt(message.encode()).decode()
 
-
 def decrypt(token: str) -> str:
     return Fernet(get_key()).decrypt(token.encode()).decode()
 
+def save_connection(name, db_type, host, port, user, password, database, trusted):
+    logger.debug(
+        f"Saving connection: {name}, {db_type}, {host}, {port}, {user}, {'*' * len(password) if password else 'None'}, {database}, Trusted: {trusted}"
+    )
 
-def save_connection(name, db_type, host, user, password, database):
-    logger.debug(f"Saving connection: {name}, {db_type}, {host}, {user}, {'*' * len(password) if password else 'None'}, {database}")
-    
     if not os.path.exists(CONFIG_DIR):
         os.makedirs(CONFIG_DIR)
 
@@ -102,16 +97,17 @@ def save_connection(name, db_type, host, user, password, database):
         config[name] = {
             "db_type": db_type,
             "host": encrypt(host),
-            "user": encrypt(user),
-            "password": encrypt(password),
-            "database": encrypt(database)
+            "port": port,
+            "user": encrypt(user) if user else "",
+            "password": encrypt(password) if password else "",
+            "database": encrypt(database),
+            "trusted": trusted
         }
 
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f)
-    
-    logger.debug("Connection saved successfully")
 
+    logger.debug("Connection saved successfully")
 
 def get_connection(name):
     if not os.path.exists(CONFIG_FILE):
@@ -128,22 +124,22 @@ def get_connection(name):
         if conn["db_type"] in ['sqlite', 'firebase']:
             return (
                 conn["db_type"],
-                conn["host"],  # For SQLite and Firebase, host is used directly
-                "",  # Empty string for user
-                "",  # Empty string for password
+                conn["host"],
+                "",  # user
+                "",  # password
                 conn.get("database", "")
             )
         else:
             return (
                 conn["db_type"],
                 decrypt(conn["host"]),
-                decrypt(conn["user"]),
-                decrypt(conn["password"]),
-                decrypt(conn["database"])
+                decrypt(conn["user"]) if conn["user"] else "",
+                decrypt(conn["password"]) if conn["password"] else "",
+                decrypt(conn["database"]),
+                conn.get("trusted", False)
             )
     except InvalidToken:
         raise InvalidPassword("Password is invalid !!!")
-
 
 def list_connections():
     if not os.path.exists(CONFIG_FILE):
@@ -162,7 +158,6 @@ def list_connections():
         db_type = details.get('db_type', 'Unknown')
         print(f"- {name} ({db_type})")
 
-
 def remove_connection(name):
     if not os.path.exists(CONFIG_FILE):
         return False
@@ -180,7 +175,6 @@ def remove_connection(name):
 
     return True
 
-
 def remove_all_connections():
     if not os.path.exists(CONFIG_FILE):
         return 0
@@ -193,19 +187,18 @@ def remove_all_connections():
 
         os.remove(CONFIG_FILE)
     except FileNotFoundError:
-        # File was deleted between check and remove
         pass
     except json.JSONDecodeError:
-        # File exists but is not valid JSON
         os.remove(CONFIG_FILE)
 
     return count
 
-
 def add_key_security():
     security_config = {}
-    key_security = click.prompt('Specify the way you want to store your encryption key',
-                                type=click.Choice([KeySecurity.KEYRING, KeySecurity.PASSWORD]))
+    key_security = click.prompt(
+        'Specify the way you want to store your encryption key',
+        type=click.Choice([KeySecurity.KEYRING, KeySecurity.PASSWORD])
+    )
     security_config['PEEP_DB_KEY_SECURITY'] = {"type": key_security}
     if key_security == KeySecurity.PASSWORD:
         security_config["PEEP_DB_KEY_SECURITY"]['salt'] = base64.b64encode(

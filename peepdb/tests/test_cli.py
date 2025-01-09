@@ -22,6 +22,7 @@ def mock_db():
     }
     return db
 
+
 @patch('peepdb.cli.get_connection')
 @patch('peepdb.core.MySQLDatabase')
 def test_view_command_with_pagination(mock_mysql_db, mock_get_connection, runner, mock_db):
@@ -46,6 +47,7 @@ def test_view_command_with_pagination(mock_mysql_db, mock_get_connection, runner
     mock_get_connection.assert_called_once_with('testconn')
     mock_db.fetch_data.assert_called_once_with('users', 2, 50)
 
+
 @patch('peepdb.cli.get_connection')
 @patch('peepdb.core.MySQLDatabase')
 def test_view_command_with_json_format(mock_mysql_db, mock_get_connection, runner, mock_db):
@@ -60,6 +62,7 @@ def test_view_command_with_json_format(mock_mysql_db, mock_get_connection, runne
     assert '"name": "John Doe"' in result.output
     assert '"page": 1' in result.output
     assert '"total_rows": 2' in result.output
+
 
 @patch('peepdb.cli.get_connection')
 @patch('peepdb.core.MySQLDatabase')
@@ -79,10 +82,12 @@ def test_view_command_with_scientific(mock_mysql_db, mock_get_connection, runner
 
     assert result.exit_code == 0
     assert "Table: users" in result.output
-    assert any(scientific in result.output for scientific in ["1.234568e+09", "1.23457e+09"])  # Ensure salary is displayed in scientific notation
+    # Check for scientific notation in the output
+    assert any(scientific in result.output for scientific in ["1.234568e+09", "1.23457e+09"])
     assert any(scientific in result.output for scientific in ["9.876543e+09", "9.87654e+09"])
 
     mock_get_connection.assert_called_once_with('testconn')
+
 
 @patch('peepdb.cli.get_connection')
 def test_view_command_invalid_connection(mock_get_connection, runner):
@@ -93,33 +98,49 @@ def test_view_command_invalid_connection(mock_get_connection, runner):
     assert result.exit_code == 0
     assert "Error: No saved connection found with name 'invalid_conn'." in result.output
 
+
 @patch('peepdb.cli.save_connection')
 def test_save_command(mock_save_connection, runner):
     result = runner.invoke(cli, [
-        'save', 
-        'testconn', 
-        '--db-type', 'mysql', 
-        '--host', 'localhost', 
-        '--user', 'testuser', 
-        '--password', 'testpassword',  # Include the password as a command-line option
+        'save',
+        'testconn',
+        '--db-type', 'mysql',
+        '--host', 'localhost',
+        '--user', 'testuser',
+        '--password', 'testpassword',
         '--database', 'testdb'
     ])
-    
+
     if result.exit_code != 0:
         print(f"Command output: {result.output}")
         print(f"Exception: {result.exception}")
 
     assert result.exit_code == 0
-    mock_save_connection.assert_called_once_with('testconn', 'mysql', 'localhost', 'testuser', 'testpassword', 'testdb')
+
+    # The real code calls:
+    # save_connection(connection_name, db_type, host, port, user, password, database, trusted)
+    # so let's assert with the full argument list:
+    mock_save_connection.assert_called_once_with(
+        'testconn',   # connection_name
+        'mysql',      # db_type
+        'localhost',  # host
+        None,         # port (not provided -> None)
+        'testuser',   # user
+        'testpassword',  # password
+        'testdb',     # database
+        False         # trusted
+    )
+
 
 @patch('peepdb.cli.list_connections')
 def test_list_command(mock_list_connections, runner):
-    mock_list_connections.return_value = None  # The function prints directly, so we return None
+    mock_list_connections.return_value = None  # The function prints directly, so we just return None
 
     result = runner.invoke(cli, ['list'])
 
     assert result.exit_code == 0
     mock_list_connections.assert_called_once()
+
 
 @patch('peepdb.cli.remove_connection')
 def test_remove_command(mock_remove_connection, runner):
@@ -131,6 +152,7 @@ def test_remove_command(mock_remove_connection, runner):
     assert "Connection 'testconn' has been removed." in result.output
     mock_remove_connection.assert_called_once_with('testconn')
 
+
 @patch('peepdb.cli.remove_all_connections')
 def test_remove_all_command(mock_remove_all_connections, runner):
     mock_remove_all_connections.return_value = 2
@@ -140,6 +162,7 @@ def test_remove_all_command(mock_remove_all_connections, runner):
     assert result.exit_code == 0
     assert "2 connection(s) have been removed." in result.output
     mock_remove_all_connections.assert_called_once()
+
 
 if __name__ == '__main__':
     pytest.main()
