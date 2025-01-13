@@ -4,7 +4,7 @@
 
 ## 🚀 Features
 
-- **Multi-Database Support**: Works with MySQL, PostgreSQL, MariaDB, SQLite, MongoDB and Firebase.
+- **Multi-Database Support**: Works with MySQL, PostgreSQL, MariaDB, SQLite, MongoDB, MSSQL and Firebase.
 - **Quick Data Inspection**: View all tables or a specific table with a simple command.
 - **User-Friendly CLI**: Easy-to-use command-line interface powered by Click.
 - **Secure Local Storage**: Securely store database connection details with encryption on your local machine.
@@ -45,7 +45,7 @@ peepdb save mydb --db-type sqlite --host /path/to/mydb.sqlite --database mydb
 
 For other databases:
 ```bash
-peepdb save <connection_name> --db-type [mysql/postgres/mariadb/mongodb/firebase] --host <host> --user <user> --password <password> --database <database>
+peepdb save <connection_name> --db-type [mysql/postgres/mariadb/mongodb/mssql/firebase] --host <host> --user <user> --password <password> --database <database>
 ```
 
 **Important Note on Password Handling:**
