@@ -35,6 +35,7 @@ mariadb==1.1.10
 more-itertools==10.5.0
 msgpack==1.1.0
 mysql-connector-python==9.0.0
+oracledb==2.5.1
 packaging==24.1
 -e git+https://github.com/evangelosmeklis/peepDB.git@4db25b049fce0058fa21e8f95b4b8840a9f3261e#egg=peepdb
 pluggy==1.5.0
