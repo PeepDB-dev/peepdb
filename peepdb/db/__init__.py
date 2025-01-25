@@ -6,6 +6,7 @@ from .mongodb import MongoDBDatabase
 from .sqlite import SQLiteDatabase
 from .firebase import FirebaseDatabase
 from .mssql import MSSQLDatabase
+from .oracle import OracleDatabase
 
 __all__ = [
     'BaseDatabase',
@@ -15,5 +16,6 @@ __all__ = [
     'MongoDBDatabase',
     'SQLiteDatabase',
     'FirebaseDatabase',
-    'MSSQLDatabase'
+    'MSSQLDatabase',
+    'OracleDatabase'
 ]

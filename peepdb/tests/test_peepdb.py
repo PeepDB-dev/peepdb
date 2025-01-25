@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from decimal import Decimal
 from peepdb.core import peep_db
 from peepdb.config import save_connection, get_connection, list_connections, remove_connection, remove_all_connections
-from peepdb.db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoDBDatabase, FirebaseDatabase
+from peepdb.db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoDBDatabase, FirebaseDatabase, OracleDatabase
 
 
 @patch('peepdb.core.FirebaseDatabase')
@@ -11,7 +11,8 @@ from peepdb.db import MySQLDatabase, PostgreSQLDatabase, MariaDBDatabase, MongoD
 @patch('peepdb.core.MySQLDatabase')
 @patch('peepdb.core.PostgreSQLDatabase')
 @patch('peepdb.core.MariaDBDatabase')
-def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_firebase_db):
+@patch('peepdb.core.OracleDatabase')
+def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_firebase_db, mock_oracle_db):
     # Create a mock database object
     mock_db = Mock()
     mock_db.fetch_tables.return_value = ['table1', 'table2']
@@ -31,6 +32,7 @@ def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_f
     mock_mariadb.return_value = mock_db
     mock_mongodb.return_value = mock_db
     mock_firebase_db.return_value = mock_db
+    mock_oracle_db.return_value = mock_db
 
     # Expected result for non-scientific, JSON format
     expected_result = {
@@ -81,6 +83,10 @@ def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_f
     result = peep_db('mongodb', 'host', 'user', 'password', 'database', format='json', scientific=False)
     assert result == expected_result
 
+    # Test OracleDB without scientific notation
+    result = peep_db('oracle', 'host', 'user', 'password', 'database', format='json', scientific=False)
+    assert result == expected_result
+
     # Test Firebase without scientific notation
     result = peep_db('firebase', 'path/to/serviceAccountKey.json', '', '', '', format='json', scientific=False)
     assert result == expected_result
@@ -103,6 +109,10 @@ def test_peep_db(mock_mariadb, mock_postgresql, mock_mysql, mock_mongodb, mock_f
 
     # Test MongoDB with scientific notation
     result = peep_db('mongodb', 'host', 'user', 'password', 'database', format='json', scientific=True)
+    assert result == expected_result
+
+    # Test OracleDB with scientific notation
+    result = peep_db('oracle', 'host', 'user', 'password', 'database', format='json', scientific=True)
     assert result == expected_result
 
     # Test fetching a specific table/collection for Firebase

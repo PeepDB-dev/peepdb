@@ -11,7 +11,8 @@ from .db import (
     MongoDBDatabase,
     SQLiteDatabase,
     FirebaseDatabase,
-    MSSQLDatabase
+    MSSQLDatabase,
+    OracleDatabase
 )
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,9 @@ def connect_to_database(db_type: str, host: str, user: str, password: str, datab
         return FirebaseDatabase(host, **kwargs)
     elif db_type == 'mssql':
         return MSSQLDatabase(host, user, password, database, **kwargs)
+    elif db_type == 'oracle':
+        kwargs.pop('trusted', None)
+        return OracleDatabase(host, user, password, database, **kwargs)
     else:
         raise ValueError("Unsupported database type")
 

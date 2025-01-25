@@ -29,7 +29,7 @@ def cli():
     peepDB: A quick database table viewer.
 
     This tool allows you to quickly inspect database tables without writing SQL queries.
-    It supports MySQL, PostgreSQL, MariaDB, SQLite, MongoDB, Firebase, and MSSQL.
+    It supports MySQL, PostgreSQL, MariaDB, SQLite, MongoDB, Firebase, MSSQL, and OracleDB.
 
     Usage examples:
 
@@ -53,7 +53,7 @@ def cli():
 @cli.command()
 @click.argument('connection_name')
 @click.option('--db-type',
-              type=click.Choice(['mysql', 'postgres', 'mariadb', 'sqlite', 'mongodb', 'firebase', 'mssql']),
+              type=click.Choice(['mysql', 'postgres', 'mariadb', 'sqlite', 'mongodb', 'firebase', 'mssql', 'oracle']),
               required=True,
               help='Database type')
 @click.option('--host', required=True, help='Database host or file path for SQLite')
