@@ -32,6 +32,16 @@ You can install peepDB directly from PyPI:
 pip install peepdb
 ```
 
+Before using it, you must also install: 
+
+```bash
+pip install firebase-admin
+```
+&
+```bash
+pip install oracledb
+```
+
 ## 🛠️ Usage
 
 peepDB uses a command-based structure for easier and more intuitive use. Here are the main commands with examples:
