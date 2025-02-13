@@ -33,7 +33,11 @@ By participating in this project, you are expected to uphold our Code of Conduct
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
-3. Install the package in editable mode with development dependencies:
+3. Install additional necessary packages
+   ```
+   sudo apt install unixodbc-dev
+   ```
+4. Install the package in editable mode with development dependencies:
    ```
    pip install -e .[dev]
    ```

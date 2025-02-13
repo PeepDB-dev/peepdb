@@ -29,10 +29,13 @@ setup(
     extras_require={
         'dev': [
             'coverage>=7.6.1',
+            'firebase-admin>=6.5.0',
+            'oracledb>=2.5.1',
+            'pyodbc>=5.2.0',
             'pytest>=8.3.2',
             'pytest-cov>=5.0.0',
         ],
-        'system': ['libmariadb3', 'libmariadb-dev'],
+        'system': ['libmariadb3', 'libmariadb-dev', 'unixodbc-dev'],
     },
     classifiers=[
         "Development Status :: 3 - Alpha",
