@@ -32,6 +32,30 @@ You can install peepDB directly from PyPI:
 pip install peepdb
 ```
 
+### Docker
+
+peepDB is also available as a `docker` image
+
+```
+docker pull [docker repo]/peepdb:0.1.4
+```
+
+To persist saved connections between container restarts, mount a volume to `/root/.peepdb/` in the container
+
+```
+$ docker volume create peepdb-data
+$ docker run -it -v peepdb-data:/root/.peepdb/ peepdb:0.1.4 save --db-type postgres \
+    --host localhost --user postgres --password password --database my-db my-postgres-db
+DEBUG:peepdb.config:Saving connection: my-postgres-db, postgres, localhost, postgres, ********, my-db
+Specify the way you want to store your encryption key (os-keyring, password): password
+Please entry the password to encrpyt/decrpty DB passwords: password
+DEBUG:peepdb.config:Connection saved successfully
+Connection 'my-postgres-db' saved successfully.
+$ docker run -it -v peepdb-data:/root/.peepdb/ peepdb:0.1.4 list
+Saved connections:
+- my-postgres-db (postgres)
+```
+
 ## 🛠️ Usage
 
 peepDB uses a command-based structure for easier and more intuitive use. Here are the main commands with examples:
