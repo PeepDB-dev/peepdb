@@ -17,21 +17,21 @@ class MongoDBDatabase(BaseDatabase):
 
             if self.extra_params:
                 params = '&'.join(
-                    [f"{k}={v}" for k, v in self.extra_params.items]
+                    [f"{k}={v}" for k, v in self.extra_params.items()]
                 )
 
                 mongo_uri = f"{mongo_uri}?{params}"
 
-            self.conection = pymongo.MongoClient(mongo_uri)
-            self.db = self.conection[self.database]
+            self.connection = pymongo.MongoClient(mongo_uri)
+            self.db = self.connection[self.database]
             self.logger.info(f"Connected to MongoDB database: {self.database}")
         except pymongo.errors.PyMongoError as e:
             self.logger.error(f"Error connecting to MongoDB database: {e}")
             raise
 
     def disconnect(self) -> None:
-        if self.conection:
-            self.conection.close()
+        if self.connection:
+            self.connection.close()
             self.logger.info(
                 f"Disconnected from MongoDB database: {self.database}"
             )
