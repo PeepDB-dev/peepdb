@@ -12,7 +12,7 @@ peepDB provides a user-friendly command-line interface for interacting with your
 You can securely store your connection details for easier access:
 
 ```bash
-peepdb save <connection_name> --db-type [mysql/postgres/mariadb] --host <host> --user <user> --database <database>
+peepdb save <connection_name> --db-type [mysql/postgres/mariadb/sqlite/mongodb/firebase/mssql/oracle] --host <host> --user <user> --database <database>
 ```
 
 You'll be prompted securely for the password.

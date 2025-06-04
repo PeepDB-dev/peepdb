@@ -9,7 +9,7 @@ layout: home
 
 ## 🚀 Features
 
-- **Multi-Database Support**: Works with MySQL, PostgreSQL, and MariaDB.
+- **Multi-Database Support**: Works with MySQL, PostgreSQL, MariaDB, SQLite, MongoDB, MSSQL, OracleDB, and Firebase.
 - **Quick Data Inspection**: View all tables or a specific table with a simple command.
 - **User-Friendly CLI**: Easy-to-use command-line interface powered by Click.
 - **Secure Local Storage**: Securely store database connection details with encryption on your local machine.
