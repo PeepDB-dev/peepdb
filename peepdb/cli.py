@@ -137,7 +137,11 @@ def view(connection_name, table, format, page, page_size, scientific):
     Example:
     peepdb view mydb --table SomeTable
     """
-    connection = get_connection(connection_name)
+    try:
+        connection = get_connection(connection_name)
+    except InvalidPassword:
+        click.echo("Error: Unable to decrypt saved connection. Invalid password provided.")
+        raise SystemExit(1)
     if not connection:
         click.echo(f"Error: No saved connection found with name '{connection_name}'.")
         return
