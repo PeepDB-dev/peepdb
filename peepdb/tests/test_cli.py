@@ -1,6 +1,7 @@
 import pytest
 from click.testing import CliRunner
 from peepdb.cli import cli
+from peepdb.exceptions import InvalidPassword
 from unittest.mock import patch, MagicMock
 
 @pytest.fixture
@@ -97,6 +98,16 @@ def test_view_command_invalid_connection(mock_get_connection, runner):
 
     assert result.exit_code == 0
     assert "Error: No saved connection found with name 'invalid_conn'." in result.output
+
+
+@patch('peepdb.cli.get_connection')
+def test_view_command_invalid_password(mock_get_connection, runner):
+    mock_get_connection.side_effect = InvalidPassword()
+
+    result = runner.invoke(cli, ['view', 'bad_conn', '--table', 'users'])
+
+    assert result.exit_code != 0
+    assert "Error: Unable to decrypt saved connection. Invalid password provided." in result.output
 
 
 @patch('peepdb.cli.save_connection')
